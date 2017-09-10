@@ -1,0 +1,240 @@
+{% extends "layout.html" %}
+
+{% block meta %}
+<meta http-equiv="refresh" content="60">
+
+<head>
+   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+   <script type="text/javascript">
+      google.charts.load('current', {'packages':['gauge']});
+      google.charts.setOnLoadCallback(drawChartTemp);
+	  google.charts.setOnLoadCallback(drawChartHum);
+	  google.charts.setOnLoadCallback(drawChartPressure);
+	   
+      function drawChartTemp() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Temp ºC', {{temperature}}]
+         
+        ]);
+
+        var temp_options = {
+		  min: -10, max: 50,
+          width: 440, height: 132,
+		  greenFrom:20, greenTo:30,
+          redFrom: 35, redTo: 50,
+          yellowFrom:30, yellowTo: 35,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_temp_div'));
+		chart.draw(data, temp_options);    
+        
+      }
+	  
+	  function drawChartHum() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Humidity %', {{humidity}}]
+        ]);
+
+        var humidity_options = {
+		  min: 0, max: 100,
+          width: 440, height: 132,
+		  greenFrom:30, greenTo:50,
+          redFrom: 50, redTo: 100,
+          
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_humidity_div'));
+		chart.draw(data, humidity_options);    
+        
+      }
+	  function drawChartPressure() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Pressure hPa', {{pressure}}]
+        ]);
+
+        var pressure_options = {
+		  min: 960, max: 1010,
+          width: 440, height: 132,
+		  greenFrom:20, greenTo:30,
+          redFrom: 35, redTo: 50,
+          yellowFrom:30, yellowTo: 35,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_pressure_div'));
+		chart.draw(data, pressure_options);    
+        
+      }
+	  
+	  google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChartTempCurve);
+
+      function drawChartTempCurve() {
+        var data = new google.visualization.DataTable();
+		data.addColumn('datetime', 'Time');    
+        data.addColumn('number', 'Temperature ºC');      
+             
+      
+      data.addRows([
+          {% for rtemp in temp %}
+		   {% if rtemp.sensorType == 'AM2302' %}
+            [new Date({{rtemp.rdate.year}},{{rtemp.rdate.month}}-1,{{rtemp.rdate.day}},{{rtemp.rdate.hour}},{{rtemp.rdate.minute}})
+            
+            ,{{'%0.2f'|format(rtemp.value)}}],
+			{% endif %}
+          {% endfor %}
+        ]);
+		
+
+        var options = {
+          title: 'Temperature readings',
+          curveType: 'function',
+		  hAxis: {
+          title: "Date",
+          gridlines: { count: 10, color: '#FFFFFF' },
+          format: 'dd-MM HH:mm' },
+		  
+		  vAxis: {
+          title: 'Degrees'
+          },
+		  
+		  
+          legend: { position: 'bottom' }
+
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+	  google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChartHumCurve);
+
+      function drawChartHumCurve() {
+        var data = new google.visualization.DataTable();
+		data.addColumn('datetime', 'Time');    
+        data.addColumn('number', 'Humidity %');      
+             
+      
+      data.addRows([
+          {% for humlog in humididylog %}
+		   
+            [new Date({{humlog.rdate.year}},{{humlog.rdate.month}}-1,{{humlog.rdate.day}},{{humlog.rdate.hour}},{{humlog.rdate.minute}})
+            
+            ,{{'%0.2f'|format(humlog.value)}}],
+			
+          {% endfor %}
+        ]);
+		
+
+        var options = {
+          title: 'Humidity readings',
+          curveType: 'function',
+		  hAxis: {
+          title: "Date",
+          gridlines: { count: 10, color: '#FFFFFF' },
+          format: 'dd-MM HH:mm' },
+		  
+		  vAxis: {
+          title: 'Percentage'
+          },
+		  
+		  
+          legend: { position: 'bottom' }
+
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart_humidity'));
+
+        chart.draw(data, options);
+      }
+	  
+      
+	  google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChartPressureCurve);
+
+      function drawChartPressureCurve() {
+        var data = new google.visualization.DataTable();
+		data.addColumn('datetime', 'Time');    
+        data.addColumn('number', 'Pressure hPa');      
+             
+      
+      data.addRows([
+          {% for presslog in pressurelog %}
+		   
+            [new Date({{presslog.rdate.year}},{{presslog.rdate.month}}-1,{{presslog.rdate.day}},{{presslog.rdate.hour}},{{presslog.rdate.minute}})
+            
+            ,{{'%0.2f'|format(presslog.value)}}],
+			
+          {% endfor %}
+        ]);
+		
+
+        var options = {
+          title: 'Pressure readings',
+          curveType: 'function',
+		  hAxis: {
+          title: "Date",
+          gridlines: { count: 10, color: '#FFFFFF' },
+          format: 'dd-MM HH:mm' },
+		  
+		  vAxis: {
+          title: 'Pressure'
+          },
+		  
+		  
+          legend: { position: 'bottom' }
+
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart_pressure'));
+
+        chart.draw(data, options);
+      }
+      
+      
+	  
+	  
+	  	  
+    </script>
+  </head>
+
+
+{% endblock %}
+
+{% block content %}
+    
+ 
+	
+	<div class="container">
+       <div class="col-xs-6 col-sm-3 col-md-2"  >
+				<div id="chart_temp_div" style="width: 400px; height: 120px;"></div>
+	   </div>
+	  
+	   <div class="col-xs-6 col-sm-3 col-md-2" >
+				<div id="chart_humidity_div" style="width: 400px; height: 120px" ></div>
+	   </div>
+   	  	
+	   <div class="col-xs-6 col-sm-3 col-md-2" >
+				<div id="chart_pressure_div" style="width: 400px; height: 120px"></div>
+          
+       </div>      
+    </div>    
+	
+    <div id="curve_chart" style="width: 1200px; height: 500px ; padding-top: 5px;"></div>
+	<div id="status"><p>Nº Temp Readings: {{ntemp}}<p></div>
+    <div id="curve_chart_humidity" style="width: 1200px; height: 500px ; padding-top: 5px;"></div>
+    <div id="curve_chart_pressure" style="width: 1200px; height: 500px ; padding-top: 5px;"></div>
+   
+
+
+	
+{% endblock %}

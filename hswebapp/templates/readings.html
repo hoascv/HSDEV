@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content %}
+{% block title %}
+{% endblock %}
+<!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Readings</h1>
+        
+		<table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Date</th>
+               <th>Location</th>
+               <th>Temp ºC</th>
+			   <th>Type</th>
+            </tr>
+         </thead>
+		 		 	
+         <tbody>
+            {% for rtemp in temperature %}
+               <tr>
+                  <td>{{ rtemp.rdate }}</td>
+                  <td>{{ rtemp.sensorLocation }}</td>
+                  <td>{{ rtemp.value }}</td>
+				  <td>{{ rtemp.sensorType }}</td>
+
+
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+	  
+	    
+		<table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Date</th>
+               <th>Location</th>
+               <th>Humidity %</th>
+			   <th>Type</th>
+            </tr>
+         </thead>
+		 		 	
+         <tbody>
+            {% for rtemp in humidity %}
+               <tr>
+                  <td>{{ rtemp.rdate }}</td>
+                  <td>{{ rtemp.sensorLocation }}</td>
+                  <td>{{ rtemp.value }}</td>
+				  <td>{{ rtemp.sensorType }}</td>
+
+
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+		        
+				
+		<table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Date</th>
+               <th>Location</th>
+               <th>Pressure Pa</th>
+			   <th>Type</th>
+            </tr>
+         </thead>
+		 		 	
+         <tbody>
+            {% for rtemp in pressure %}
+               <tr>
+                  <td>{{ rtemp.rdate }}</td>
+                  <td>{{ rtemp.sensorLocation }}</td>
+                  <td>{{ rtemp.value }}</td>
+				  <td>{{ rtemp.sensorType }}</td>
+
+
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+      </div>
+    </div>
+{% endblock %}

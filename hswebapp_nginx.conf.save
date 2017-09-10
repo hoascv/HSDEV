@@ -1,0 +1,21 @@
+#Full path: /var/www/hswebapp/hswebapp_nginx.conf
+
+server {
+    listen      80;
+    server_name localhost hswebapp.local;
+    charset     utf-8;
+    client_max_body_size 5M;
+
+    location /static {
+        root /var/www/hswebapp/;
+    }
+
+    location / { try_files $uri @hswebapp; }
+    location @hswebapp {
+        include uwsgi_params;
+        uwsgi_pass unix:/var/www/hswebapp/hswebapp_uwsgi.sock;
+    }
+     location /favicon.ico {
+        alias /var/www/hswebapp/static/ico/favicon.ico;
+    }
+}
