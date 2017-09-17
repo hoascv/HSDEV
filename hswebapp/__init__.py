@@ -27,4 +27,5 @@ db = SQLAlchemy(app)
 
 from hswebapp.views import views
 app.register_blueprint(views)
-	
+from hswebapp.webstreaming import webstreaming
+app.register_blueprint(webstreaming)	

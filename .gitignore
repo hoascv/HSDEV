@@ -1,6 +1,7 @@
 #HS
 old/
-
+test/
+hsvenv/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
