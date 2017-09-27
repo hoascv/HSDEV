@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block meta %}
-<meta http-equiv="refresh" content="5">
+<meta http-equiv="refresh" content="30">
 {% endblock %}
 
 
@@ -15,7 +15,112 @@
         {% set mem = psuvar.virtual_memory() %}
         <p>Total: {{mem.total}} | Available: {{mem.available}} | free: {{mem.free}} 
            Percent: {{mem.percent}} % | Shared: {{mem.shared}} | Cached: {{mem.cached}} 
-        </p>    
+        </p>
+        <h3>Disk info:</h1>
+        {% set disks= psuvar.disk_partitions() %}
+        <table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Device</th>
+               <th>Mount point</th>
+               <th>fstype</th>
+               <th>Total space</th>
+               <th>used space</th>
+               <th>free space</th>
+               <th>percentage</th>
+               
+		    </tr>
+         </thead>
+		 		 	
+         <tbody>
+         {% for disk in disks %}
+         <tr>
+                  <td>{{ disk.device }}</td>
+                  <td>{{ disk.mountpoint}}</td>
+                  <td>{{ disk.fstype }}</td>
+				  <td> {{psuvar.disk_usage(disk.mountpoint).total}}</td>
+                  <td> {{psuvar.disk_usage(disk.mountpoint).used}}</td>
+                  <td> {{psuvar.disk_usage(disk.mountpoint).free}}</td>
+                  <td> {{psuvar.disk_usage(disk.mountpoint).percent}}</td>
+                  
+
+         </tr>
+         {% endfor %}        
+                 
+         </tbody>
+        </table>
+        <h3>Network info:</h1>
+        {% set nics = psuvar.net_io_counters(pernic=True) %}
+        <table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Device</th>
+               <th>bytes sent</th>
+               <th>bytes received</th>
+               <th>errors w receiving</th>
+               <th>err w sending</th>
+               <th>drop incomming packets</th>
+               <th>drop outgoing packets</th>
+                              
+		    </tr>
+         </thead>
+		 		 	
+         <tbody>
+         {% for nic in nics %}
+         <tr>
+                  <td>{{nic}}</td>
+                  <td> {{ nics[nic].bytes_sent}}</td>
+                  <td> {{ nics[nic].bytes_recv}}</td>
+                  <td> {{ nics[nic].errin}}</td>
+                  <td> {{ nics[nic].errout}}</td>
+                  <td> {{ nics[nic].dropin}}</td>
+                  <td> {{ nics[nic].dropout}}</td>
+                  
+                  
+         </tr>
+         {% endfor %}        
+                 
+         </tbody>
+        </table>
+        
+        <h2>Connection info:</h1>
+        {% set connections= psuvar.net_connections() %}
+        
+        <table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Sck .File desc.</th>
+               <th>address family</th>
+               <th>type</th>
+               <th>local address</th>
+               <th>remote address</th>
+               <th>status</th>
+               <th>pid</th>
+               
+                              
+		    </tr>
+         </thead>
+		 		 	
+         <tbody>
+         {% for conn in connections %}
+         <tr>
+                  <td> {{conn.fd}}</td>
+                  <td> {{conn.family}}</td>
+                  <td> {{conn.type}}</td>
+                  <td> {{conn.laddr}}</td>
+                  <td> {{conn.raddr}}</td>
+                  <td> {{conn.status}}</td>
+                  <td> {{conn.pid}}</td>
+                  
+                  
+         </tr>
+         {% endfor %}        
+                 
+         </tbody>
+        </table>
+        
+        
+        
         
         
         
