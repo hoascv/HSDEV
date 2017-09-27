@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block meta %}
+<meta http-equiv="refresh" content="5">
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h3>Processor info:</h1>
+        <p>Num Processor: {{psuvar.cpu_count()}}</p>
+        <p>Perc: {{psuvar.cpu_percent(interval=None)}} %</p>
+        {% set freq = psuvar.cpu_freq(percpu=False) %}
+        <p>Current:{{ freq.current}} MHz Min :{{ freq.min}} MHz  Max :{{ freq.max}}  MHz    </p>
+        <h3>Memory info:</h1>
+        {% set mem = psuvar.virtual_memory() %}
+        <p>Total: {{mem.total}} | Available: {{mem.available}} | free: {{mem.free}} 
+           Percent: {{mem.percent}} % | Shared: {{mem.shared}} | Cached: {{mem.cached}} 
+        </p>    
+        
+        
+        
+    </div>
+{% endblock %} 

@@ -84,9 +84,10 @@ def listreadings():
 
 @views.route('/system', methods=["GET"])
 def system():
-    return render_template("system.html",varh='about')    
-    
-    
+    import psutil
+    return render_template("pages/system.html",psuvar=psutil)    
+
+
 @views.route('/about1', methods=["GET"])
 def about1():
     return render_template("about.html",varh='about')

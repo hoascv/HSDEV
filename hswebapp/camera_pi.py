@@ -13,7 +13,7 @@ class Camera(BaseCamera):
             time.sleep(2)
 
             stream = io.BytesIO()
-            camera.annotate_foreground = Color('black')
+            camera.annotate_foreground = Color('green')
             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             
             for foo in camera.capture_continuous(stream, 'jpeg',
