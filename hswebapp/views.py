@@ -14,7 +14,7 @@ def create_tables():
 @views.route('/')
 @views.route('/index')
 def home():
-    return render_template('home.html')
+    return render_template('pages/home.html')
 
 
 

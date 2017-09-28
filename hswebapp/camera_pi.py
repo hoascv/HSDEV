@@ -26,6 +26,7 @@ class Camera(BaseCamera):
                 # return current frame
                 stream.seek(0)
                 yield stream.read()
+                
 
                 # reset stream for next frame
                 stream.seek(0)
