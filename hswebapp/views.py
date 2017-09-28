@@ -90,7 +90,7 @@ def system():
 
 @views.route('/about1', methods=["GET"])
 def about1():
-    return render_template("about.html",varh='about')
+    return render_template("pages/about.html",varh='about')
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -9,8 +9,12 @@ class Camera(BaseCamera):
     @staticmethod
     def frames():
         with picamera.PiCamera() as camera:
+            
+            camera.resolution = (640, 480) #HS
+            camera.framerate = 5  #HS
             # let camera warm up
             time.sleep(2)
+            
 
             stream = io.BytesIO()
             camera.annotate_foreground = Color('green')

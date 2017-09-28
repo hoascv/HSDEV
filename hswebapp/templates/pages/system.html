@@ -9,11 +9,11 @@
         <p>Num Processor: {{psuvar.cpu_count()}}</p>
         <p>Perc: {{psuvar.cpu_percent(interval=None)}} %</p>
         {% set freq = psuvar.cpu_freq(percpu=False) %}
-        <p>Current:{{ freq.current}} MHz Min :{{ freq.min}} MHz  Max :{{ freq.max}}  MHz    </p>
+        <p>Current:{{ freq.current}} MHz Min :{{ freq.min}} MHz  Max :{{ freq.max}} MHz    </p>
         <h3>Memory info:</h1>
         {% set mem = psuvar.virtual_memory() %}
-        <p>Total: {{mem.total}} | Available: {{mem.available}} | free: {{mem.free}} 
-           Percent: {{mem.percent}} % | Shared: {{mem.shared}} | Cached: {{mem.cached}} 
+        <p>Total: {{mem.total | filesizeformat(True)}} | Available: {{mem.available | filesizeformat(True)}} | Free : {{mem.free | filesizeformat(True)}} |
+           Percent: {{mem.percent}} % | Shared: {{mem.shared | filesizeformat(True)}} | Cached: {{mem.cached | filesizeformat(True)}} 
         </p>
         <h3>Disk info:</h1>
         {% set disks= psuvar.disk_partitions() %}
@@ -22,11 +22,11 @@
             <tr>
                <th>Device</th>
                <th>Mount point</th>
-               <th>fstype</th>
+               <th>FS Type</th>
                <th>Total space</th>
-               <th>used space</th>
-               <th>free space</th>
-               <th>percentage</th>             
+               <th>Used space</th>
+               <th>Free space</th>
+               <th>Percentage</th>             
 		    </tr>
          </thead>
 		 		 	
@@ -36,9 +36,9 @@
                   <td>{{ disk.device }}</td>
                   <td>{{ disk.mountpoint}}</td>
                   <td>{{ disk.fstype }}</td>
-				  <td> {{psuvar.disk_usage(disk.mountpoint).total}}</td>
-                  <td> {{psuvar.disk_usage(disk.mountpoint).used}}</td>
-                  <td> {{psuvar.disk_usage(disk.mountpoint).free}}</td>
+				  <td> {{psuvar.disk_usage(disk.mountpoint).total | filesizeformat(True)}} </td>
+                  <td> {{psuvar.disk_usage(disk.mountpoint).used | filesizeformat(True)}}</td>
+                  <td> {{psuvar.disk_usage(disk.mountpoint).free | filesizeformat(True)}}</td>
                   <td> {{psuvar.disk_usage(disk.mountpoint).percent}}</td>              
          </tr>
          {% endfor %}        
@@ -64,8 +64,8 @@
          {% for nic in nics %}
          <tr>
              <td>{{nic}}</td>
-             <td> {{ nics[nic].bytes_sent}}</td>
-             <td> {{ nics[nic].bytes_recv}}</td>
+             <td> {{ nics[nic].bytes_sent | filesizeformat(True)}}</td>
+             <td> {{ nics[nic].bytes_recv | filesizeformat(True)}}</td>
              <td> {{ nics[nic].errin}}</td>
              <td> {{ nics[nic].errout}}</td>
              <td> {{ nics[nic].dropin}}</td>
@@ -83,11 +83,11 @@
          <thead>
             <tr>
                <th>Sck .File desc.</th>
-               <th>address family</th>
-               <th>type</th>
-               <th>local address</th>
-               <th>remote address</th>
-               <th>status</th>
+               <th>Address Family</th>
+               <th>Socket Type</th>
+               <th>Local Address</th>
+               <th>Remote Address</th>
+               <th>Status</th>
                <th>pid</th>               
 		    </tr>
          </thead>
@@ -96,10 +96,10 @@
          {% for conn in connections %}
          <tr>
              <td> {{conn.fd}}</td>
-             <td> {{conn.family}}</td>
-             <td> {{conn.type}}</td>
-             <td> {{conn.laddr}}</td>
-             <td> {{conn.raddr}}</td>
+             <td> {{conn.family | replace ('AddressFamily.','')}}</td>
+             <td> {{conn.type | replace ('SocketType.','')}}</td>
+             <td> {{conn.laddr.ip}} : {{conn.laddr.port}}  </td>
+             <td> {{conn.raddr.ip}} : {{conn.raddr.port}}</td>
              <td> {{conn.status}}</td>
              <td> {{conn.pid}}</td>     
          </tr>
