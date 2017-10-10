@@ -16,10 +16,6 @@ def create_tables():
 def home():
     return render_template('pages/home.html')
 
-
-
-#return render_template('home.html')	
-
 @views.route('/addframe', methods=['GET','POST'])
 def addframe1():
     form = FrameworkForm()

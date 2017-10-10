@@ -33,7 +33,8 @@ class HumidityLog(db.Model):
         
     def close_session(self):
         db.session.close()
-
+    def get_value(self):
+        return  str(self.value) +"%"
 		
 class TempLog(db.Model):
     __tablename__ = 'templog'
@@ -70,7 +71,9 @@ class TempLog(db.Model):
         
     def close_session(self):
         db.session.close()
-        
+    
+    def get_value(self):
+        return str(self.value)
  
  
 class PressureLog(db.Model):

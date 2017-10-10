@@ -1,6 +1,15 @@
 import os,sys 
 from datetime import datetime 
 import sys; sys.path.append('/var/www/hswebapp')
+import  I2C_LCD_driver
+from time import *
+
+mylcd = I2C_LCD_driver.lcd()
+
+
+
+
+
 
 import Adafruit_DHT 
 import Adafruit_BMP.BMP085 as BMP085
@@ -27,6 +36,10 @@ if values_sensor is not None:
   #  pressure_reading.close_session()
     
     
+mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
+
+mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
+
 	
 #print('Temp = {0:0.2f} *C'.format(sensor.read_temperature()))
 #print('Pressure = {0:0.2f} Pa'.format(sensor.read_pressure()))
