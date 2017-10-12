@@ -14,6 +14,7 @@ mylcd = I2C_LCD_driver.lcd()
 import Adafruit_DHT 
 import Adafruit_BMP.BMP085 as BMP085
 from hswebapp.models.models import TempLog,HumidityLog,PressureLog
+from time import sleep
 
 
 values_sensor = BMP085.BMP085()
@@ -35,10 +36,17 @@ if values_sensor is not None:
     pressure_reading.save_to_db()
   #  pressure_reading.close_session()
     
-    
+mylcd.backlight(1)    
 mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
 
 mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
+# check if people is around
+
+sleep(60)
+mylcd.backlight(0)
+
+
+
 
 	
 #print('Temp = {0:0.2f} *C'.format(sensor.read_temperature()))
