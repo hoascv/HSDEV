@@ -57,12 +57,12 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li {% if request.endpoint == 'views.temp' %} class="active" {% endif %}><a href="{{ url_for('views.temp') }}">Environment</a></li>
+            <li {% if request.endpoint == 'views.temp' %} class="active" {% endif %}><a href="{{ url_for('views.temp') }}">Dashboard</a></li>
             <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown">Readings <b class="caret"></b></a>
+              <a class="dropdown-toggle"data-toggle="dropdown">Reports<b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="{{ url_for('views.listreadings') }}">List All</a></li>
-                <li><a>Search</a></li>
+                <li><a href="{{ url_for('views.report_listreadings') }}">Log</a></li>
+                <li><a href="{{ url_for('views.report_grafics') }}">Grafics</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Delete</li>
                 <li><a>Delete Last</a></li>

@@ -13,7 +13,7 @@ webstreaming = Blueprint('webstreaming', __name__,template_folder='templates')
 #    from camera import Camera
 
 # Raspberry Pi camera module (requires picamera package)
-from camera_pi import Camera
+from hswebapp.camera_pi import Camera
 
 
 

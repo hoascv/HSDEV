@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 app = Flask(__name__)
 
-app.config.from_object('config.config_app.DbConfig')
+app.config.from_pyfile('config/config.py')
 db = SQLAlchemy(app)
 
 #import models

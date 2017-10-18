@@ -2,7 +2,7 @@ import io
 import time
 import picamera
 from picamera import Color
-from base_camera import BaseCamera
+from hswebapp.base_camera import BaseCamera
 import datetime as dt
 
 class Camera(BaseCamera):

@@ -73,17 +73,66 @@ def temp():
         return render_template("no_sensor.html")
 
 @views.route('/readings', methods=["GET"])
-def listreadings():
+def report_listreadings():
 
    # if request.method == "GET": 
     return render_template("readings.html", temperature = TempLog.query.order_by(TempLog.rdate.desc()).limit(50).all(), humidity = HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(50).all(), pressure = PressureLog.query.order_by(PressureLog.rdate.desc()).limit(50).all())   
 
+
+
+@views.route('/grafics', methods=["GET"])
+def report_grafics():
+    import sys
+    import Adafruit_DHT
+    import Adafruit_BMP.BMP085 as BMP085
+    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 23)
+    values_sensor = BMP085.BMP085()
+
+    try:
+            query_result = db.engine.execute('select count(id) as num from templog')
+            for row in query_result:
+                result= row['num']
+                            
+            
+            #templog = db.session.query(TempLog).all()
+            templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(10).all()
+            humiditylog= HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(10).all()
+            pressurelog= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(10).all()
+            
+    except:
+        flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
+        raise
+        db.session.rollback()
+        return redirect(url_for('home'))
+    finally:
+        db.session.close()
+        
+        
+
+
+    #db.session.close()
+    
+    if humidity is not None and temperature is not None and values_sensor is not None:
+        return render_template("pages/grafics.html",ntemp=result,
+                                temperature=temperature,temp = templog,
+                                humidity=humidity,humididylog= humiditylog,
+                                pressure=float(values_sensor.read_pressure()/100),
+                                pressurelog=pressurelog
+                                )
+    else:
+        return render_template("no_sensor.html")
+         
+   
+   
 @views.route('/system', methods=["GET"])
 def system():
     import psutil
     return render_template("pages/system.html",psuvar=psutil)    
-
-
+    
+    
+    
+    
+    
 @views.route('/about1', methods=["GET"])
 def about1():
     return render_template("pages/about.html",varh='about')
