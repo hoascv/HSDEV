@@ -2,6 +2,7 @@ from flask import Blueprint,render_template,flash, redirect, url_for, request, R
 from jinja2 import TemplateNotFound
 from hswebapp import app,db
 from hswebapp.models.models import TempLog,HumidityLog,PressureLog
+import subprocess
 
 
 
@@ -127,7 +128,78 @@ def report_grafics():
 @views.route('/system', methods=["GET"])
 def system():
     import psutil
-    return render_template("pages/system.html",psuvar=psutil)    
+    from hswebapp.models.hsutil import Hsutil
+    return render_template("pages/system.html",psuvar=psutil,hsutil = Hsutil)    
+
+
+    
+@views.route('/shutdown',  methods=['GET'])
+def shutdown():
+    import subprocess
+    
+    #cmd = ["ls","-l"]
+    cmd = ["shutdown"]
+    
+    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            stdin=subprocess.PIPE)
+    print ('Server shutdown')
+    
+    out,err = p.communicate()
+    #return out
+    return 'Server shutdown'
+    
+    
+@views.route('/reboot',  methods=['GET'])
+def reboot():
+    
+    
+    #cmd = ["ls","-l"]
+    cmd = ["reboot"]
+    
+    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            stdin=subprocess.PIPE)
+    print ('Server reboot')
+    out,err = p.communicate()
+    
+    return out
+    
+def uptime():
+
+    cmd = ["uptime"]
+    
+    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            stdin=subprocess.PIPE)
+    
+    out,err = p.communicate()
+    up = str(out)
+    
+    uptime = str(up.split(',')[0]).split('up')[-1]
+    return uptime
+    
+
+@views.route('/system_uptime',  methods=['GET'])    
+def system_uptime():
+    
+    return uptime()  
+    
+@views.route('/command',  methods=['GET'])  
+def command():
+
+    cmd = ["iwconfig"]
+    
+    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            stdin=subprocess.PIPE)
+    
+    out,err = p.communicate()
+    
+    return out
+
+    
+    
     
     
     

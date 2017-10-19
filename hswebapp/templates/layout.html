@@ -71,8 +71,23 @@
             </li>
 
             <li {% if request.endpoint == 'views.about1' %} class="active" {% endif %}><a href="{{ url_for('views.about1') }}">About</a></li>
-            <li {% if request.endpoint == 'views.system' %} class="active" {% endif %}><a href="{{ url_for('views.system') }}">System Monitor</a></li>
-
+            
+            <li class="dropdown">
+              <a class="dropdown-toggle"data-toggle="dropdown">System<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li {% if request.endpoint == 'views.system' %} class="active" {% endif %}><a href="{{ url_for('views.system') }}">System Monitor</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Power</li>
+                <li><a href="{{ url_for('views.reboot') }}">Reboot</a></li>
+                <li><a href="{{ url_for('views.shutdown') }}">Shutdown</a></li>
+              </ul>
+           </li>
+            
+            
+            
+            
+            
+            
           </ul>
           <ul class="nav navbar-nav pull-right">
             <li><a href="{{ url_for('views.register') }}">Signup</a></li>

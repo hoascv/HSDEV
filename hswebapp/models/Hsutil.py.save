@@ -1,0 +1,13 @@
+import subprocess
+class HsUtil:
+    def __init__(self,psutil):
+        self.psutil=psut
+    def getUptime():
+	cmd = ["uptime"]
+    
+    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            stdin=subprocess.PIPE)
+    
+    out,err = p.communicate()
+    
