@@ -1,0 +1,31 @@
+import serial
+#defining the RPi's pins as Input / Output
+import RPi.GPIO as GPIO
+
+#importing the library for delaying command.
+import time 
+
+#used for GPIO numbering
+GPIO.setmode(GPIO.BCM) 
+
+#closing the warnings when you are compiling the code
+GPIO.setwarnings(False) 
+
+cmdPin = 18 
+
+GPIO.setup(cmdPin,GPIO.HIGH)
+
+count=10
+
+
+whilwhile (count> 0):
+e (count> 0):
+    ser = serial.Serial ("/dev/ttyS0")    #Open named port 
+    ser.baudrate = 57600                     #Set baud rate to 9600
+    ser.write(b'inicio transm')
+    data =b'teste'                     #Read ten characters from serial port to data
+    ser.write(data)                      #Send back the received data
+    ser.write(count)
+    print(count)
+    count-=1
+

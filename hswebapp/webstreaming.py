@@ -19,6 +19,7 @@ from hswebapp.camera_pi import Camera
 
 
 @webstreaming.route('/webstreaming_page1')
+
 def webstreaming_func():
     """Video streaming home page."""
     return render_template('pages/webstreaming.html')

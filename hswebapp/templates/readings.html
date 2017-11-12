@@ -6,6 +6,31 @@
     <div class="jumbotron">
       <div class="container">
         <h1>Readings</h1>
+        <table class="table table-hover">
+         <thead>
+            <tr>
+               <th>Date</th>
+               <th>Location</th>
+               <th>Voltage (V)</th>
+               <th>Current (mA)</th>    
+			   <th>Type</th>
+            </tr>
+         </thead>
+		 		 	
+         <tbody>
+            {% for rtemp in power %}
+               <tr>
+                  <td>{{ rtemp.rdate }}</td>
+                  <td>{{ rtemp.sensorLocation }}</td>
+                  <td>{{ rtemp.voltage }}</td>
+				  <td>{{ rtemp.current }}</td>				  
+                  <td>{{ rtemp.sensorType }}</td>
+
+
+               </tr>
+            {% endfor %}
+         </tbody>
+      </table>
         
 		<table class="table table-hover">
          <thead>

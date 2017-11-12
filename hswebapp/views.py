@@ -1,7 +1,8 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response
 from jinja2 import TemplateNotFound
 from hswebapp import app,db
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog
+from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
+from hswebapp.models.hsutil import Hsutil
 import subprocess
 
 
@@ -49,6 +50,7 @@ def temp():
             templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(10).all()
             humiditylog= HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(10).all()
             pressurelog= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(10).all()
+            powerlog =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(10).all()
             
     except:
         flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
@@ -57,29 +59,26 @@ def temp():
         return redirect(url_for('home'))
     finally:
         db.session.close()
-        
-        
-
-
-    #db.session.close()
+     
     
     if humidity is not None and temperature is not None and values_sensor is not None:
         return render_template("app_temp.html",ntemp=result,
                                 temperature=temperature,temp = templog,
                                 humidity=humidity,humididylog= humiditylog,
                                 pressure=float(values_sensor.read_pressure()/100),
-                                pressurelog=pressurelog
+                                pressurelog=pressurelog,
+                                powerlog=powerlog
                                 )
     else:
         return render_template("no_sensor.html")
 
+        
 @views.route('/readings', methods=["GET"])
 def report_listreadings():
 
    # if request.method == "GET": 
-    return render_template("readings.html", temperature = TempLog.query.order_by(TempLog.rdate.desc()).limit(50).all(), humidity = HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(50).all(), pressure = PressureLog.query.order_by(PressureLog.rdate.desc()).limit(50).all())   
-
-
+    return render_template("readings.html", temperature = TempLog.query.order_by(TempLog.rdate.desc()).limit(50).all(), humidity = HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(50).all(), pressure = PressureLog.query.order_by(PressureLog.rdate.desc()).limit(50).all(), power = PowerLog.query.order_by(PowerLog.rdate.desc()).limit(50).all())
+               
 
 @views.route('/grafics', methods=["GET"])
 def report_grafics():
@@ -99,6 +98,7 @@ def report_grafics():
             templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(10).all()
             humiditylog= HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(10).all()
             pressurelog= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(10).all()
+            powerlog =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(10).all()
             
     except:
         flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
@@ -118,7 +118,8 @@ def report_grafics():
                                 temperature=temperature,temp = templog,
                                 humidity=humidity,humididylog= humiditylog,
                                 pressure=float(values_sensor.read_pressure()/100),
-                                pressurelog=pressurelog
+                                pressurelog=pressurelog,
+                                powerlog=powerlog
                                 )
     else:
         return render_template("no_sensor.html")
@@ -128,7 +129,7 @@ def report_grafics():
 @views.route('/system', methods=["GET"])
 def system():
     import psutil
-    from hswebapp.models.hsutil import Hsutil
+    
     return render_template("pages/system.html",psuvar=psutil,hsutil = Hsutil)    
 
 
@@ -153,7 +154,6 @@ def shutdown():
 @views.route('/reboot',  methods=['GET'])
 def reboot():
     
-    
     #cmd = ["ls","-l"]
     cmd = ["reboot"]
     
@@ -164,26 +164,7 @@ def reboot():
     out,err = p.communicate()
     
     return out
-    
-def uptime():
-
-    cmd = ["uptime"]
-    
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            stdin=subprocess.PIPE)
-    
-    out,err = p.communicate()
-    up = str(out)
-    
-    uptime = str(up.split(',')[0]).split('up')[-1]
-    return uptime
-    
-
-@views.route('/system_uptime',  methods=['GET'])    
-def system_uptime():
-    
-    return uptime()  
+   
     
 @views.route('/command',  methods=['GET'])  
 def command():
@@ -197,12 +178,6 @@ def command():
     out,err = p.communicate()
     
     return out
-
-    
-    
-    
-    
-    
     
     
 @views.route('/about1', methods=["GET"])
