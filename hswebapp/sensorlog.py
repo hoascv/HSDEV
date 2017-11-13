@@ -14,14 +14,29 @@ import ast
 
 
 
+def response():
 
-
+    try:
+        app.logger.info("Waiting: {}".format(ser.in_waiting))
+        raw = str(ser.readline(),'utf-8')    
+        line = raw.replace("\r\n","")
+        app.logger.info("Received: {}".format(line))
+        data = ast.literal_eval(line)
+        
+    except:
+         app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {}'.format(datetime.now()))
+         data={'STATUS':'UNABLE TO GET DATA FROM THE DEVICE SENSOR'}
+    
+    return data
 
 
 
 
 values_sensor = BMP085.BMP085()
 humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 23) 
+
+
+
 
 if humidity is not None and temperature is not None:
     reading = TempLog(datetime.now(),'livingroom','AM2302',temperature)
@@ -54,18 +69,7 @@ ser.baudrate = 57600                     #Set baud rate to 57600
 
 ser.write(b'0')
 sleep(2)
-app.logger.info("Waiting: {}".format(ser.in_waiting))
-
-try:
-    raw = str(ser.readline(),'utf-8')
-    line = raw.replace("\r\n","")
-    app.logger.info("Received: {}".format(line))
-    data =ast.literal_eval(line)
-    
-except :
-    data = {'STATUS':'UNABLE TO GET DATA FROM THE DEVICE SENSOR'}
-    app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {}'.format(datetime.now()))
-    
+data = response()
         
   
 #{'DEVICE_ID':'DS1','HEADER':'register','STATUS':'REGISTERED'}
@@ -73,14 +77,25 @@ if (data['STATUS']=='REGISTERED'):
     ser.write(b'7') # Retrieve remote power
     sleep(2)
 #{'DEVICE_ID':'DS1','HEADER':'data','STATUS':'Sucess','SENSOR_TYPE':'Voltage','SENSOR_VALUE':4.84}
-    app.logger.info("Waiting: {}".format(ser.in_waiting))
-    raw = str(ser.readline(),'utf-8')    
-    line = raw.replace("\r\n","")
-    app.logger.info("Received: {}".format(line))
-    data = ast.literal_eval(line)
+    
+    data = response()
     
     power_reading = PowerLog(datetime.now(),'remote','SolarCell',float(data['SENSOR_VALUE']),0)
     power_reading.save_to_db()
+    
+    ser.write(b'2')
+    data = response()
+    reading = TempLog(datetime.now(),'remote','DH11',data['SENSOR_VALUE'])
+    reading.save_to_db()
+    
+    ser.write(b'4')
+    data = response()
+    reading = HumidityLog(datetime.now(),'remote','DH11',data['SENSOR_VALUE'])
+    reading.save_to_db()
+    
+    
+    
+    
     
 else:
     app.logger.info((data['STATUS']))
