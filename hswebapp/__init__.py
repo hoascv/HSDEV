@@ -1,7 +1,8 @@
 import os,sys
 from flask import Flask,render_template
 from flask_sqlalchemy import SQLAlchemy
-
+import logging
+from logging.handlers import RotatingFileHandler
 
 
 #basedir = os.path.abspath(os.path.dirname(__file__))
@@ -12,14 +13,22 @@ app = Flask(__name__)
 app.config.from_pyfile('config/config.py')
 db = SQLAlchemy(app)
 
-#import models
-#end of models
+handler = RotatingFileHandler('/var/www/hswebapp/hswebapp/log/hswebapp.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
+
+
+
+
+
+
+
 
 from hswebapp.views import views
 app.register_blueprint(views)
 from hswebapp.webstreaming import webstreaming
 app.register_blueprint(webstreaming)
-print ('end init')
+app.logger.info('end init')
 #from hswebapp.resources import u
 
 

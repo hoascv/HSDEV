@@ -6,10 +6,19 @@ from time import *
 import Adafruit_DHT 
 import Adafruit_BMP.BMP085 as BMP085
 from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
+from hswebapp import app
 from time import sleep
-
 import serial
 import ast
+
+
+
+
+
+
+
+
+
 
 values_sensor = BMP085.BMP085()
 humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 23) 
@@ -44,44 +53,60 @@ ser = serial.Serial ("/dev/ttyS0",timeout=4)    #Open named port
 ser.baudrate = 57600                     #Set baud rate to 57600
 
 ser.write(b'0')
-print("Waiting: {}".format(ser.in_waiting))
-raw = str(ser.readline(),'utf-8')
-     
-line = raw.replace("\r\n","")
-print("Received: {}".format(line))
+sleep(2)
+app.logger.info("Waiting: {}".format(ser.in_waiting))
 
-try :
+try:
+    raw = str(ser.readline(),'utf-8')
+    line = raw.replace("\r\n","")
+    app.logger.info("Received: {}".format(line))
     data =ast.literal_eval(line)
+    
 except :
     data = {'STATUS':'UNABLE TO GET DATA FROM THE DEVICE SENSOR'}
+    app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {}'.format(datetime.now()))
     
         
   
 #{'DEVICE_ID':'DS1','HEADER':'register','STATUS':'REGISTERED'}
 if (data['STATUS']=='REGISTERED'):
-    ser.write(b'7')
+    ser.write(b'7') # Retrieve remote power
+    sleep(2)
 #{'DEVICE_ID':'DS1','HEADER':'data','STATUS':'Sucess','SENSOR_TYPE':'Voltage','SENSOR_VALUE':4.84}
-    print("Waiting: {}".format(ser.in_waiting))
+    app.logger.info("Waiting: {}".format(ser.in_waiting))
     raw = str(ser.readline(),'utf-8')    
     line = raw.replace("\r\n","")
-    print("Received: {}".format(line))
-    data =ast.literal_eval(line)
+    app.logger.info("Received: {}".format(line))
+    data = ast.literal_eval(line)
+    
     power_reading = PowerLog(datetime.now(),'remote','SolarCell',float(data['SENSOR_VALUE']),0)
     power_reading.save_to_db()
     
 else:
-    print("NOT CONNECTION")
-    print(data['STATUS'])
+    app.logger.info((data['STATUS']))
     
 ser.close()    
 
 
-sleep(60)
+
+
+#app.logger.warning('A warning occurred (%d apples)', 42)
+#app.logger.error('An error occurred')
+#app.logger.info('Info')
+
+
+
+def response ():   
+    pass
+    
+    #except :
+     #   app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {}'.format(datetime.now()))
+	
+    
+#sleep(60)
 mylcd.backlight(0)
 
-
-
-	
+    
 #print('Temp = {0:0.2f} *C'.format(sensor.read_temperature()))
 #print('Pressure = {0:0.2f} Pa'.format(sensor.read_pressure()))
 #print('Altitude = {0:0.2f} m'.format(sensor.read_altitude()))
