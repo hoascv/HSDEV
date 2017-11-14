@@ -28,7 +28,7 @@ from hswebapp.views import views
 app.register_blueprint(views)
 from hswebapp.webstreaming import webstreaming
 app.register_blueprint(webstreaming)
-app.logger.info('end init')
+#app.logger.info('end init')
 #from hswebapp.resources import u
 
 

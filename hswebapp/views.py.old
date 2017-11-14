@@ -48,7 +48,6 @@ def temp():
                             
             temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').limit(1)
             temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').limit(1)
-            temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').limit(1)
             
             humidity_sensor1= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='AM2302').limit(1)         
             humidity_sensor2= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='DH11').limit(1)         
@@ -69,9 +68,8 @@ def temp():
     
     return render_template("app_temp.html",
                                 temperature_sensor1=temperature_sensor1[0],
-                                temperature_sensor2=temperature_sensor2[0],
-                                temperature_sensor3=temperature_sensor3[0],
                                 humidity_sensor1=humidity_sensor1[0],
+                                temperature_sensor2=temperature_sensor2[0],
                                 humidity_sensor2=humidity_sensor2[0],
                                 pressure=pressure[0],
                                 power=power[0]
@@ -142,6 +140,8 @@ def system():
 @views.route('/shutdown',  methods=['GET'])
 def shutdown():
     import subprocess
+    delay(5)
+    app.logger.info("Shutdown initiated")
     
     #cmd = ["ls","-l"]
     cmd = ["shutdown"]
@@ -158,7 +158,10 @@ def shutdown():
     
 @views.route('/reboot',  methods=['GET'])
 def reboot():
-    
+    delay(5)
+    flash("Reboot initiated")
+    app.logger.info("Reboot initiated")
+        
     #cmd = ["ls","-l"]
     cmd = ["reboot"]
     

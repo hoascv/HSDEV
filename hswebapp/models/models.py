@@ -31,6 +31,9 @@ class HumidityLog(db.Model):
         db.session.delete(self)
         db.session.commit()
         
+    def get_date(self):
+        return rdate    
+        
     def close_session(self):
         db.session.close()
     def get_value(self):

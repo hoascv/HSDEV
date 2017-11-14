@@ -7,15 +7,19 @@
    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
    <script type="text/javascript">
       google.charts.load('current', {'packages':['gauge']});
-      google.charts.setOnLoadCallback(drawChartTemp);
-	  google.charts.setOnLoadCallback(drawChartHum);
+      google.charts.setOnLoadCallback(drawChartTemp1);
+      google.charts.setOnLoadCallback(drawChartTemp2);
+      google.charts.setOnLoadCallback(drawChartTemp3);
+	  google.charts.setOnLoadCallback(drawChartHum1);
+      google.charts.setOnLoadCallback(drawChartHum2);
 	  google.charts.setOnLoadCallback(drawChartPressure);
+      google.charts.setOnLoadCallback(drawChartPower);
 	   
-      function drawChartTemp() {
+      function drawChartTemp1() {
 
         var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
-          ['Temp ºC', {{temperature}}]
+          ['Temp ºC', {{temperature_sensor1.value}}]
          
         ]);
 
@@ -28,16 +32,61 @@
           minorTicks: 5
         };
 
-        var chart = new google.visualization.Gauge(document.getElementById('chart_temp_div'));
+        var chart = new google.visualization.Gauge(document.getElementById('chart_temp1_div'));
 		chart.draw(data, temp_options);    
         
       }
-	  
-	  function drawChartHum() {
+      
+	  function drawChartTemp2() {
 
         var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
-          ['Humidity %', {{humidity}}]
+          ['Temp ºC', {{temperature_sensor2.value}}]
+         
+        ]);
+
+        var temp_options = {
+		  min: -10, max: 50,
+          width: 440, height: 132,
+		  greenFrom:20, greenTo:30,
+          redFrom: 35, redTo: 50,
+          yellowFrom:30, yellowTo: 35,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_temp2_div'));
+		chart.draw(data, temp_options);    
+        
+      }
+      
+      
+	  function drawChartTemp3() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Temp ºC', {{temperature_sensor3.value}}]
+         
+        ]);
+
+        var temp_options = {
+		  min: -10, max: 50,
+          width: 440, height: 132,
+		  greenFrom:20, greenTo:30,
+          redFrom: 35, redTo: 50,
+          yellowFrom:30, yellowTo: 35,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_temp3_div'));
+		chart.draw(data, temp_options);    
+        
+      }
+      
+	  function drawChartHum1() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Humidity %', {{humidity_sensor1.value}}]
         ]);
 
         var humidity_options = {
@@ -49,7 +98,28 @@
           minorTicks: 5
         };
 
-        var chart = new google.visualization.Gauge(document.getElementById('chart_humidity_div'));
+        var chart = new google.visualization.Gauge(document.getElementById('chart_humidity1_div'));
+		chart.draw(data, humidity_options);    
+        
+      }
+      
+	  function drawChartHum2() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Humidity %', {{humidity_sensor2.value}}]
+        ]);
+
+        var humidity_options = {
+		  min: 0, max: 100,
+          width: 440, height: 132,
+		  greenFrom:30, greenTo:50,
+          redFrom: 50, redTo: 100,
+          
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_humidity2_div'));
 		chart.draw(data, humidity_options);    
         
       }
@@ -57,7 +127,7 @@
 
         var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
-          ['Pressure hPa', {{pressure}}]
+          ['Pressure hPa', {{pressure.value}}]
         ]);
 
         var pressure_options = {
@@ -72,7 +142,27 @@
         var chart = new google.visualization.Gauge(document.getElementById('chart_pressure_div'));
 		chart.draw(data, pressure_options);    
         
-      }	  	  
+      }	  	
+      function drawChartPower() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['mVolts', {{power.voltage*1000}}]
+        ]);
+
+        var power_options = {
+		  min: 0, max: 6000,
+          width: 440, height: 132,
+		  greenFrom:5000, greenTo:6000,
+          redFrom: 0, redTo: 4499,
+          yellowFrom:4500, yellowTo: 4999,
+          minorTicks: 100
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_power_div'));
+		chart.draw(data, power_options);    
+        
+      }	  	      
     </script>
   </head>
 
@@ -85,16 +175,39 @@
 	
 	<div class="container">
        <div class="col-xs-6 col-sm-3 col-md-2"  >
-				<div id="chart_temp_div" style="width: 400px; height: 120px;"></div>
+				<div id="chart_temp1_div" style="width: 400px; height: 120px;  "></div>
+                <p style="margin-top:5px;">{{temperature_sensor1.sensorLocation }}:{{temperature_sensor1.rdate.strftime('%H:%M')}}</p>
+	   </div>
+	  
+      <div class="col-xs-6 col-sm-3 col-md-2"  >
+				<div id="chart_temp2_div" style="width: 400px; height: 120px;  "></div>
+                <p style="margin-top:5px;">{{temperature_sensor2.sensorLocation }}:{{temperature_sensor2.rdate.strftime('%H:%M')}}</p>
+	   </div>
+	  
+      <div class="col-xs-6 col-sm-3 col-md-2"  >
+				<div id="chart_temp3_div" style="width: 400px; height: 120px;  "></div>
+                <p style="margin-top:5px;">{{temperature_sensor3.sensorLocation }}:{{temperature_sensor3.rdate.strftime('%H:%M')}}</p>
 	   </div>
 	  
 	   <div class="col-xs-6 col-sm-3 col-md-2" >
-				<div id="chart_humidity_div" style="width: 400px; height: 120px" ></div>
+				<div id="chart_humidity1_div" style="width: 400px; height: 120px" ></div>
+                <p style="margin-top:5px;">{{humidity_sensor1.sensorLocation }}:{{humidity_sensor1.rdate.strftime('%H:%M')}}</p>
 	   </div>
-   	  	
+   	  
+       <div class="col-xs-6 col-sm-3 col-md-2" >
+				<div id="chart_humidity2_div" style="width: 400px; height: 120px" ></div>
+                <p style="margin-top:5px;">{{humidity_sensor2.sensorLocation }}:{{humidity_sensor2.rdate.strftime('%H:%M')}}</p>
+	   </div>
+       
 	   <div class="col-xs-6 col-sm-3 col-md-2" >
 				<div id="chart_pressure_div" style="width: 400px; height: 120px"></div>
+                <p style="margin-top:5px;">{{pressure.sensorLocation }}:{{pressure.rdate.strftime('%H:%M')}}</p>
           
+       </div>      
+       
+	   <div class="col-xs-6 col-sm-3 col-md-2" >
+				<div id="chart_power_div" style="width: 400px; height: 120px"></div>
+                <p style="margin-top:5px; center">{{power.sensorLocation }}:{{power.rdate.strftime('%H:%M')}}</p>
        </div>      
     </div>    
 	
