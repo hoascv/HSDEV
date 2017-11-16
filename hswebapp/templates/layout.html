@@ -57,7 +57,7 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li {% if request.endpoint == 'views.temp' %} class="active" {% endif %}><a href="{{ url_for('views.temp') }}">Dashboard</a></li>
+            <li {% if request.endpoint == 'views.dashboard' %} class="active" {% endif %}><a href="{{ url_for('views.dashboard') }}">Dashboard</a></li>
             <li class="dropdown">
               <a class="dropdown-toggle"data-toggle="dropdown">Reports<b class="caret"></b></a>
               <ul class="dropdown-menu">

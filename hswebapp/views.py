@@ -4,7 +4,8 @@ from hswebapp import app,db
 from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
 from hswebapp.models.hsutil import Hsutil
 import subprocess
-
+from datetime import datetime
+from time import sleep
 
 
 views = Blueprint('views', __name__,template_folder='templates')
@@ -33,19 +34,15 @@ def addframe1():
     return render_template('add_framework.html',form=form)	
 
 @views.route("/environment")
-def temp():
+def dashboard():
     import sys
- #   import Adafruit_DHT
- #   import Adafruit_BMP.BMP085 as BMP085
- #   humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 23)
- #   values_sensor = BMP085.BMP085()
-
+ 
     try:
             #query_result = db.engine.execute('select count(id) as num from templog')
             
             #for row in query_result:
             #    result= row['num']
-                            
+            
             temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').limit(1)
             temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').limit(1)
             temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').limit(1)
@@ -67,7 +64,7 @@ def temp():
         db.session.close()
      
     
-    return render_template("app_temp.html",
+    return render_template("pages/dashboard.html",
                                 temperature_sensor1=temperature_sensor1[0],
                                 temperature_sensor2=temperature_sensor2[0],
                                 temperature_sensor3=temperature_sensor3[0],
@@ -142,6 +139,10 @@ def system():
 @views.route('/shutdown',  methods=['GET'])
 def shutdown():
     import subprocess
+    message = "Shutdown initiated at  {} ".format(datetime.now())
+    flash(message)
+    app.logger.info(message)
+    
     
     #cmd = ["ls","-l"]
     cmd = ["shutdown"]
@@ -158,7 +159,14 @@ def shutdown():
     
 @views.route('/reboot',  methods=['GET'])
 def reboot():
+    import subprocess
+    message = "Restart initiated at  {} ".format(datetime.now())
+    flash(message)
+    app.logger.info(message)
     
+    
+    
+    sleep(5)
     #cmd = ["ls","-l"]
     cmd = ["reboot"]
     
