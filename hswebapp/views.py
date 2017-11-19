@@ -136,48 +136,61 @@ def system():
 
 
     
-@views.route('/shutdown',  methods=['GET'])
+@views.route('/shutdown',  methods=['POST'])
 def shutdown():
     import subprocess
-    message = "Shutdown initiated at  {} ".format(datetime.now())
-    flash(message)
-    app.logger.info(message)
+     
+    reason = request.form['reason']
+    app.logger.info(reason)
     
+    code = request.form['code']   
+    app.logger.info(code)
     
-    #cmd = ["ls","-l"]
-    cmd = ["shutdown"]
-    
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+    if (code == "HSS"):    
+        message = "Shutdown initiated at  {} ".format(datetime.now())
+        flash(message)
+        app.logger.info(message)  
+        #cmd = ["ls","-l"]
+        cmd = ["shutdown"]
+        p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE)
-    print ('Server shutdown')
+        out,err = p.communicate()
+        return out
+    else:
+        flash("Code invalid")
+        return render_template('pages/home.html')
+        
     
-    out,err = p.communicate()
-    #return out
-    return 'Server shutdown'
+@views.route('/srvmng/<int:option>')
+def srvmng(option):
     
-    
-@views.route('/reboot',  methods=['GET'])
+    return render_template("pages/srvmng_page.html",option=option)    
+   
+@views.route('/reboot',  methods=['POST'])
 def reboot():
     import subprocess
-    message = "Restart initiated at  {} ".format(datetime.now())
-    flash(message)
-    app.logger.info(message)
+     
+    reason = request.form['reason']
+    app.logger.info(reason)
     
-    
-    
-    sleep(5)
+    code = request.form['code']   
+    app.logger.info(code)
+    if (code == "HSR"):      
+        message = "Restart initiated at  {} ".format(datetime.now())
+        flash(message)
+        app.logger.info(message) 
+        sleep(20)
     #cmd = ["ls","-l"]
-    cmd = ["reboot"]
-    
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+        cmd = ["reboot"]
+        p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE)
-    print ('Server reboot')
-    out,err = p.communicate()
-    
-    return out
-   
+        out,err = p.communicate()
+        return out
+    else:
+        flash("Code Invalid")
+        return render_template('pages/home.html')
     
 @views.route('/command',  methods=['GET'])  
 def command():

@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block meta %}
+
+<head>
+<script>
+function validateForm() {
+    var vReason = document.forms["myForm"]["reason"].value;
+    var vCode =  document.forms["myForm"]["code"].value;
+    if (vReason == "" || vCode == "") {
+        alert("Reason and Code must be filled out");
+        return false;
+    }
+}
+</script>
+</head>
+
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if (option == 1) %}
+            <h1>Restart</h1>
+            <form name="myForm" action="/reboot"
+        {% else %}
+            <h1>Shutdown</h1>
+            <form name="myForm" action="/shutdown"
+        {% endif %}       
+              onsubmit="return validateForm()" method="post">
+              Reason:
+              <br>
+              <input type="text" name="reason">
+              <br>
+              Code:
+              <br><input type="text" name="code">
+              <br>
+              <input type="submit" value="Submit">
+        </form>
+
+    <p>Note:</p>
+
+        
+        
+        
+    </div>
+{% endblock %}

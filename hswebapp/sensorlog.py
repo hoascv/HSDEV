@@ -80,21 +80,22 @@ if (data['STATUS']=='REGISTERED'):
     
     data = response()
     
-    power_reading = PowerLog(datetime.now(),'remote','SolarCell',float(data['SENSOR_VALUE']),0)
+    power_reading = PowerLog(datetime.now(),'Remote','SolarCell',float(data['SENSOR_VALUE']),0)
     power_reading.save_to_db()
     
     ser.write(b'2')
+    sleep(2)
     data = response()
-    reading = TempLog(datetime.now(),'remote','DH11',data['SENSOR_VALUE'])
+    reading = TempLog(datetime.now(),'Remote','DH11',data['SENSOR_VALUE'])
     reading.save_to_db()
     
     ser.write(b'4')
+    sleep(2)
     data = response()
-    reading = HumidityLog(datetime.now(),'remote','DH11',data['SENSOR_VALUE'])
+    reading = HumidityLog(datetime.now(),'Remote','DH11',data['SENSOR_VALUE'])
     reading.save_to_db()
     
-    
-    
+      
     
     
 else:

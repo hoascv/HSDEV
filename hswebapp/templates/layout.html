@@ -78,8 +78,8 @@
                 <li {% if request.endpoint == 'views.system' %} class="active" {% endif %}><a href="{{ url_for('views.system') }}">System Monitor</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Power</li>
-                <li><a href="{{ url_for('views.reboot') }}">Reboot</a></li>
-                <li><a href="{{ url_for('views.shutdown') }}">Shutdown</a></li>
+                <li><a href="{{ url_for('views.srvmng',option=1)}}">Reboot</a></li>
+                <li><a href="{{ url_for('views.srvmng',option=0)}}">Shutdown</a></li>
               </ul>
            </li>
             
@@ -100,7 +100,7 @@
     </div>
 
     <!-- Begin page content -->
-    <main id="content" role="main" class="container">
+    <main  id="content" role="main" class="container">
 
       {% with messages = get_flashed_messages() %}
         {% if messages %}

@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config.from_pyfile('config/config.py')
 db = SQLAlchemy(app)
 
-handler = RotatingFileHandler('/var/www/hswebapp/hswebapp/log/hswebapp.log', maxBytes=10000, backupCount=1)
+handler = RotatingFileHandler('/var/www/hswebapp/hswebapp/log/hswebapp.log', maxBytes=100000, backupCount=3)
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 
