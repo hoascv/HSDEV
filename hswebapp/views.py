@@ -9,6 +9,8 @@ from datetime import datetime
 from time import sleep
 
 from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash,check_password_hash
+
 
 
 
@@ -221,10 +223,12 @@ def page_not_found(e):
 @views.route('/register', methods=['GET','POST'])
 def register():
     form = RegisterForm()
+    
     if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data,method='sha256')
                 
         try:
-            new_user = User(username=form.username.data,email=form.email.data,password=form.password.data)
+            new_user = User(username=form.username.data,email=form.email.data,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
             
@@ -240,9 +244,12 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data,password=form.password.data).first()
+    
+            
+        user = User.query.filter_by(username=form.username.data).first()
         if (user):
-            return redirect(url_for('webstreaming.webstreaming_func'))
+            if check_password_hash(user.password,form.password.data):
+                return redirect(url_for('webstreaming.webstreaming_func'))
             
     
         return '<h1> Invalid credencials </h1>'
