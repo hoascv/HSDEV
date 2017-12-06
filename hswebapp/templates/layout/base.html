@@ -94,7 +94,7 @@
           <ul class="nav navbar-nav pull-right">
             {% block sign %}
             {% if current_user.is_authenticated : %}
-                <li><a href="{{ url_for('views.logout') }}">Hi, {{current_user.username}}  (logout)</a></li>          
+                <li><a href="{{ url_for('views.logout') }}">Hi, {{current_user.username}} Last login: [{{current_user.lastlogin}}]   (logout)</a></li>          
             {% else :%}
             
                 <li><a href="{{ url_for('views.register') }}">Signup</a></li>

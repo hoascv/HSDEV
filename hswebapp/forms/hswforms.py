@@ -8,7 +8,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=80)])
     advanceuser = BooleanField('Advance User')
 
-class AdminForm(LoginForm):
+class AdminForm(LoginForm): ##Todo 
     isadmin = BooleanField('isAdmin')
     acesslevel = StringField('Acess Level', validators=[InputRequired(),Length(min=1,max=1)])    
     

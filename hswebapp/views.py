@@ -214,7 +214,7 @@ def command():
 @views.route('/about1', methods=["GET"])
 @login_required
 def about1():
-    return render_template("pages/about.html",name=current_user.username)
+    return render_template("pages/about.html")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -252,6 +252,9 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if (user):
             if check_password_hash(user.password,form.password.data):
+                user.lastlogin = datetime.now()
+                db.session.commit()
+                
                 login_user(user)
                 #TODO IMPLEMENT REDIRECT GET THE NEXT
                 #next = flask.request.args.get('next')
@@ -268,6 +271,7 @@ def login():
 @views.route('/logout')
 @login_required
 def logout():
+       
     logout_user()
     flash("See ya")
     return redirect(url_for('views.home'))
