@@ -59,6 +59,9 @@ mylcd.backlight(1)
 mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
 
 mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
+mylcd.lcd_display_string("Linha3",3,0)
+mylcd.lcd_display_string("Linha4",4,0)
+
 # check if people is around
 
 
@@ -119,7 +122,7 @@ def response ():
      #   app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {}'.format(datetime.now()))
 	
     
-#sleep(60)
+sleep(5)
 mylcd.backlight(0)
 
     

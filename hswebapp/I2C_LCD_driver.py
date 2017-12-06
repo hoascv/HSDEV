@@ -19,7 +19,9 @@ Made available under GNU GENERAL PUBLIC LICENSE
 I2CBUS = 1
 
 # LCD Address
-ADDRESS = 0x27
+#ADDRESS = 0x27
+ADDRESS = 0x3F
+
 
 #import sys; sys.path.append('/var/www/hswebapp')
 import smbus2 as smbus

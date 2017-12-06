@@ -1,11 +1,17 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response
 from jinja2 import TemplateNotFound
 from hswebapp import app,db
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
+from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,User
 from hswebapp.models.hsutil import Hsutil
+from hswebapp.forms.hswforms import LoginForm,RegisterForm
 import subprocess
 from datetime import datetime
 from time import sleep
+
+from sqlalchemy.exc import IntegrityError
+
+
+
 
 
 views = Blueprint('views', __name__,template_folder='templates')
@@ -38,11 +44,7 @@ def dashboard():
     import sys
  
     try:
-            #query_result = db.engine.execute('select count(id) as num from templog')
-            
-            #for row in query_result:
-            #    result= row['num']
-            
+                       
             temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').limit(1)
             temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').limit(1)
             temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').limit(1)
@@ -57,6 +59,7 @@ def dashboard():
 
     except:
         flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
+        
         raise
         db.session.rollback()
         return redirect(url_for('home'))
@@ -103,7 +106,8 @@ def report_grafics():
             powerlog =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(10).all()
             
     except:
-        flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
+        app.logger.error("InvalidRequestError: {} ".format(sys.exc_info()[0]))
+        
         raise
         db.session.rollback()
         return redirect(url_for('home'))
@@ -214,10 +218,33 @@ def about1():
 def page_not_found(e):
     return render_template("errors/404.html"),404
 
-@views.route('/register', methods=["GET"])
+@views.route('/register', methods=['GET','POST'])
 def register():
-    return render_template("about.html",)
+    form = RegisterForm()
+    if form.validate_on_submit():
+                
+        try:
+            new_user = User(username=form.username.data,email=form.email.data,password=form.password.data)
+            db.session.add(new_user)
+            db.session.commit()
+            
+        except IntegrityError:
+            db.session.rollback()
+            return '<h1>' + 'The user: {} already exists'.format(form.username.data) + '</h1>'
+                        
+        return '<h1>' + 'New user has been created' + '</h1>'
+        
+    return render_template("pages/hsw_signup.html",form = form)
 
-@views.route('/login', methods=["GET"])
+@views.route('/login', methods=['GET','POST'] )
 def login():
-    return render_template("about.html")
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data,password=form.password.data).first()
+        if (user):
+            return redirect(url_for('webstreaming.webstreaming_func'))
+            
+    
+        return '<h1> Invalid credencials </h1>'
+    
+    return render_template("pages/hsw_login.html",form = form)
