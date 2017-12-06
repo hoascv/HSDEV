@@ -3,6 +3,9 @@ from jinja2 import TemplateNotFound
 from hswebapp import app,db
 from importlib import import_module
 import os
+from flask_login import login_required,login_user,logout_user, current_user
+
+
 webstreaming = Blueprint('webstreaming', __name__,template_folder='templates')
 
 
@@ -19,7 +22,7 @@ from hswebapp.camera_pi import Camera
 
 
 @webstreaming.route('/webstreaming_page1')
-
+@login_required
 def webstreaming_func():
     """Video streaming home page."""
     return render_template('pages/webstreaming.html')

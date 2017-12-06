@@ -1,7 +1,7 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response
 from jinja2 import TemplateNotFound
-from hswebapp import app,db
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,User
+from hswebapp import app,db,login_manager,User
+from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
 from hswebapp.models.hsutil import Hsutil
 from hswebapp.forms.hswforms import LoginForm,RegisterForm
 import subprocess
@@ -10,11 +10,7 @@ from time import sleep
 
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash,check_password_hash
-
-
-
-
-
+from flask_login import login_required,login_user,logout_user, current_user
 
 views = Blueprint('views', __name__,template_folder='templates')
 
@@ -22,24 +18,24 @@ views = Blueprint('views', __name__,template_folder='templates')
 def create_tables():
     db.create_all()
 
+  
+  
+    
+    
+#@login_manager.user_loader
+#def load_user(user_id):
+#    print('print views')
+#    return User.query.get(int(user_id))    
+
+    
+    
+    
+    
+    
 @views.route('/')
-@views.route('/index')
 def home():
     return render_template('pages/home.html')
 
-@views.route('/addframe', methods=['GET','POST'])
-def addframe1():
-    form = FrameworkForm()
-    if form.validate_on_submit():
-        framework = form.framework.data
-        description = form.description.data
-
-
-
-        flash("Stored: ' framework {} and description {}'".format(framework,description))
-        return redirect(url_for('home'))
-
-    return render_template('add_framework.html',form=form)	
 
 @views.route("/environment")
 def dashboard():
@@ -132,17 +128,17 @@ def report_grafics():
     else:
         return render_template("no_sensor.html")
          
-   
-   
+      
 @views.route('/system', methods=["GET"])
+@login_required
 def system():
     import psutil
     
     return render_template("pages/system.html",psuvar=psutil,hsutil = Hsutil)    
 
-
     
 @views.route('/shutdown',  methods=['POST'])
+
 def shutdown():
     import subprocess
      
@@ -167,13 +163,16 @@ def shutdown():
         flash("Code invalid")
         return render_template('pages/home.html')
         
-    
+        
 @views.route('/srvmng/<int:option>')
+
 def srvmng(option):
     
     return render_template("pages/srvmng_page.html",option=option)    
    
+
 @views.route('/reboot',  methods=['POST'])
+
 def reboot():
     import subprocess
      
@@ -213,13 +212,17 @@ def command():
     
     
 @views.route('/about1', methods=["GET"])
+@login_required
 def about1():
-    return render_template("pages/about.html",varh='about')
+    return render_template("pages/about.html",name=current_user.username)
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("errors/404.html"),404
 
+    
+     
+    
 @views.route('/register', methods=['GET','POST'])
 def register():
     form = RegisterForm()
@@ -228,7 +231,7 @@ def register():
         hashed_password = generate_password_hash(form.password.data,method='sha256')
                 
         try:
-            new_user = User(username=form.username.data,email=form.email.data,password=hashed_password)
+            new_user = User(username=form.username.data,email=form.email.data,password=hashed_password,lastlogin=datetime.now())
             db.session.add(new_user)
             db.session.commit()
             
@@ -249,9 +252,26 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if (user):
             if check_password_hash(user.password,form.password.data):
-                return redirect(url_for('webstreaming.webstreaming_func'))
-            
+                login_user(user)
+                #TODO IMPLEMENT REDIRECT GET THE NEXT
+                #next = flask.request.args.get('next')
+                #if not is_safe_url(next):
+                #    return flask.abort(400)
+                #return redirect(url_for(next or 'views.home'))
+                return redirect(url_for('views.home'))
+            return '<h1> Invalid password </h1>'        
     
-        return '<h1> Invalid credencials </h1>'
+        return '<h1> User does NOT exists </h1>'
     
     return render_template("pages/hsw_login.html",form = form)
+
+@views.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("See ya")
+    return redirect(url_for('views.home'))
+
+    
+    
+    

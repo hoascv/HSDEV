@@ -1,6 +1,6 @@
 from datetime import datetime
 from hswebapp import db
- 
+#from flask_login import UserMixin 
 
 class HumidityLog(db.Model):
     __tablename__ = 'humiditylog'
@@ -155,11 +155,12 @@ class PowerLog(db.Model):
     def get_current(self):
         return str(self.current)
             
-class User(db.Model):
-    id = db.Column(db.Integer,primary_key=True)
-    username= db.Column(db.String(15), unique=True)
-    email= db.Column(db.String(50), unique=True)
-    password =db.Column(db.String(80))
+#class User(UserMixin,db.Model):
+#    id = db.Column(db.Integer,primary_key=True)
+#    username= db.Column(db.String(15), unique=True)
+#    email= db.Column(db.String(50), unique=True)
+#    password =db.Column(db.String(80))
+
     
     
     

@@ -8,12 +8,18 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=80)])
     advanceuser = BooleanField('Advance User')
 
+class AdminForm(LoginForm):
+    isadmin = BooleanField('isAdmin')
+    acesslevel = StringField('Acess Level', validators=[InputRequired(),Length(min=1,max=1)])    
+    
+    
+    
 class RegisterForm(FlaskForm):
     username = StringField('User Name', validators=[InputRequired(),Length(min=4,max=15)])
     email    = StringField('email',  validators=[InputRequired(),Email(message='Invalid email'),Length(max=50)])
     password = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=80)])
-    advanceuser = BooleanField('Advance User')
-    
+    advanceduser = BooleanField('Advanced User')
+  
     
     
     

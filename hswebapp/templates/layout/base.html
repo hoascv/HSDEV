@@ -92,9 +92,17 @@
             
           </ul>
           <ul class="nav navbar-nav pull-right">
-            <li><a href="{{ url_for('views.register') }}">Signup</a></li>
-            <li><a href="{{ url_for('views.login') }}">Login</a></li>
-
+            {% block sign %}
+            {% if current_user.is_authenticated : %}
+                <li><a href="{{ url_for('views.logout') }}">Hi, {{current_user.username}}  (logout)</a></li>          
+            {% else :%}
+            
+                <li><a href="{{ url_for('views.register') }}">Signup</a></li>
+                <li><a href="{{ url_for('views.login') }}">Login</a></li>
+            {% endif %}
+      
+            
+            {% endblock %}
 
           </ul>
         </div><!--/.nav-collapse -->
