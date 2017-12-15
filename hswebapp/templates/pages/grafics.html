@@ -59,11 +59,11 @@
       
       data.addRows([
           {% for humlog in humididylog %}
-		   
+		   {% if humlog.sensorType == 'AM2302' %}
             [new Date({{humlog.rdate.year}},{{humlog.rdate.month}}-1,{{humlog.rdate.day}},{{humlog.rdate.hour}},{{humlog.rdate.minute}})
             
             ,{{'%0.2f'|format(humlog.value)}}],
-			
+			{% endif %}
           {% endfor %}
         ]);
 		

@@ -1,5 +1,5 @@
 import os,sys
-from flask import Flask,render_template
+from flask import Flask,render_template,current_app
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import RotatingFileHandler
@@ -7,6 +7,9 @@ from logging.handlers import RotatingFileHandler
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager,UserMixin
 from datetime import datetime
+from blinker import Namespace
+from flask_marshmallow import Marshmallow
+
  
 
 
@@ -19,9 +22,29 @@ app.config.from_pyfile('config/config.py')
 
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 login_manager = LoginManager(app) 
 login_manager.login_view = 'views.login'
+
+
+
+my_signals = Namespace()
+
+model_saved = my_signals.signal('model-saved')
+
+
+#@model_saved.connect
+#def model_saved_signal(app, message, **extra):
+#    msg=message
+#    print('intit '+ msg)
+    
+    
+
+
+
+
+
 
 class User(UserMixin,db.Model): ## move class User to models.py 
     id = db.Column(db.Integer,primary_key=True)
@@ -30,9 +53,13 @@ class User(UserMixin,db.Model): ## move class User to models.py
     password = db.Column(db.String(80))
     isadmin = db.Column(db.Boolean)
     createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updatedAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     lastlogin = db.Column(db.DateTime)
     acesslevel =db.Column(db.Integer)
     
+    def __repr__(self):
+        return "<User(name='%s', createdAt='%s')>" % (
+                             self.username, self.createdAt)   
     
 
 @login_manager.user_loader
@@ -41,7 +68,7 @@ def load_user(user_id):
 
 
 
-handler = RotatingFileHandler('/var/www/hswebapp/hswebapp/log/hswebapp.log', maxBytes=100000, backupCount=10)
+handler = RotatingFileHandler('/var/www/hswebapp/log/app/hswebapp.log', maxBytes=100000, backupCount=10)
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 

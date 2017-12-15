@@ -1,18 +1,37 @@
-from flask import Blueprint,render_template,flash, redirect, url_for, request, Response
+from flask import Blueprint,render_template,flash, redirect, url_for, request, Response,Flask,jsonify
 from jinja2 import TemplateNotFound
-from hswebapp import app,db,login_manager,User
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
+from hswebapp import app,db,login_manager,User,model_saved
+from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sensorlog_schema,powerlog_schema
 from hswebapp.models.hsutil import Hsutil
 from hswebapp.forms.hswforms import LoginForm,RegisterForm
 import subprocess
 from datetime import datetime
 from time import sleep
-
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_required,login_user,logout_user, current_user
 
+
+
+
+
 views = Blueprint('views', __name__,template_folder='templates')
+
+signals_events = []
+##teste
+
+from marshmallow import pprint
+
+
+
+def add_event(message):
+    return message
+ 
+  #  print(len(signals_events)) 
+    
+#signals_events.append(add_event)
+
+
 
 @app.before_first_request
 def create_tables():
@@ -43,17 +62,18 @@ def dashboard():
  
     try:
                        
-            temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').limit(1)
-            temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').limit(1)
-            temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').limit(1)
+            temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').first()          
+            temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').first()                        
+            temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').first()
+                        
+            humidity_sensor1= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='AM2302').first()     
+            humidity_sensor2= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='DH11').first()        
+                        
+            pressure_sensor1= PressureLog.query.order_by(PressureLog.rdate.desc()).first()
             
-            humidity_sensor1= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='AM2302').limit(1)         
-            humidity_sensor2= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='DH11').limit(1)         
-            
-            pressure= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(1).all()          
-            
-            power =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(1).all()
-            
+            power_sensor1 =   PowerLog.query.order_by(PowerLog.rdate.desc()).first()
+                     
+                         
 
     except:
         flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
@@ -65,21 +85,25 @@ def dashboard():
         db.session.close()
      
     
-    return render_template("pages/dashboard.html",
-                                temperature_sensor1=temperature_sensor1[0],
-                                temperature_sensor2=temperature_sensor2[0],
-                                temperature_sensor3=temperature_sensor3[0],
-                                humidity_sensor1=humidity_sensor1[0],
-                                humidity_sensor2=humidity_sensor2[0],
-                                pressure=pressure[0],
-                                power=power[0]
+    return render_template("pages/dashboard.html",temperature_sensor1=temperature_sensor1,
+                                temperature_sensor2=temperature_sensor2,
+                                temperature_sensor3=temperature_sensor3,
+                                humidity_sensor1=humidity_sensor1,
+                                humidity_sensor2=humidity_sensor2,
+                                pressure_sensor1=pressure_sensor1,
+                                power_sensor1=power_sensor1,
+                                TempLog=TempLog,
+                                HumidityLog=HumidityLog,
+                                PressureLog=PressureLog,
+                                PowerLog=PowerLog
                                 )
-   
+  
         
 @views.route('/readings', methods=["GET"])
 def report_listreadings():
 
    # if request.method == "GET": 
+    
     return render_template("readings.html", temperature = TempLog.query.order_by(TempLog.rdate.desc()).limit(50).all(), humidity = HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(50).all(), pressure = PressureLog.query.order_by(PressureLog.rdate.desc()).limit(50).all(), power = PowerLog.query.order_by(PowerLog.rdate.desc()).limit(50).all())
                
 
@@ -92,17 +116,18 @@ def report_grafics():
     values_sensor = BMP085.BMP085()
 
     try:
-            query_result = db.engine.execute('select count(id) as num from templog')
-            for row in query_result:
-                result= row['num']
+            #query_result = db.engine.execute('select count(id) as num from templog')
+            #for row in query_result:
+            #    result= row['num']
                             
-            
+            result=TempLog.query.count()
             #templog = db.session.query(TempLog).all()
             templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(10).all()
             humiditylog= HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(10).all()
             pressurelog= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(10).all()
             powerlog =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(10).all()
-            
+        
+        
     except:
         app.logger.error("InvalidRequestError: {} ".format(sys.exc_info()[0]))
         
@@ -112,9 +137,8 @@ def report_grafics():
     finally:
         db.session.close()
         
-        
-
-
+         
+    
     #db.session.close()
     
     if humidity is not None and temperature is not None and values_sensor is not None:
@@ -235,11 +259,20 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
-            return '<h1>' + 'The user: {} already exists'.format(form.username.data) + '</h1>'
-                        
-        return '<h1>' + 'New user has been created' + '</h1>'
+            flash('The user: {} or the email {} already exists \n Thank you'.format(form.username.data,form.email.data))
+            app.logger.error('Sign up error: {}'.format(e))
+            return render_template("pages/hsw_signup.html",form = form)
+        
+        except Exception as e:
+            app.logger.error('Sign up error: {}'.format(e))
+            db.session.rollback()
+            flash('Error! Sorry for the inconvinience The issue has been logged and it will be solved asap')
+            return render_template("pages/hsw_signup.html",form = form)
+            
+        flash('The user: {} has been created'.format(form.username.data))                
+        return redirect(url_for('views.login'))
         
     return render_template("pages/hsw_signup.html",form = form)
 
@@ -255,16 +288,19 @@ def login():
                 user.lastlogin = datetime.now()
                 db.session.commit()
                 
-                login_user(user)
+                login_user(user,remember=form.rememberme.data)
                 #TODO IMPLEMENT REDIRECT GET THE NEXT
-                #next = flask.request.args.get('next')
-                #if not is_safe_url(next):
+                #next = request.args.get('next')
+                #if not is_safe_url(nextform):
                 #    return flask.abort(400)
-                #return redirect(url_for(next or 'views.home'))
+                #http://flask.pocoo.org/snippets/62/
+                #return redirect(url_for(next))
                 return redirect(url_for('views.home'))
-            return '<h1> Invalid password </h1>'        
-    
-        return '<h1> User does NOT exists </h1>'
+            
+            flash('Invalid password')
+            return render_template("pages/hsw_login.html",form = form)
+        flash('User does not exist')
+        return render_template("pages/hsw_login.html",form = form)
     
     return render_template("pages/hsw_login.html",form = form)
 
@@ -275,6 +311,78 @@ def logout():
     logout_user()
     flash("See ya")
     return redirect(url_for('views.home'))
+    
+    
+    
+@views.route('/users')
+@login_required
+def system_users():
+    users = User.query.all()
+    return render_template('pages/system_users.html', users=users)
+    
+
+@views.route('/update_user', methods=['POST'])
+@login_required
+def update_user():
+    app.logger.info('updating user')
+    updated=datetime.now()
+    try:
+        user = User.query.filter_by(id=request.form['id']).first()
+        user.username = request.form['username']
+        user.email = request.form['email']
+        user.updatedAt = updated
+        
+        db.session.commit()
+        
+    
+    except Exception as e:
+        app.logger.error('Update error: {}'.format(e))
+        db.session.rollback()
+        flash('Error! Sorry for the inconvinience The issue has been logged and it will be solved asap') 
+        return jsonify({'result' : 'error'})
+    
+    finally:
+        db.session.close()
+        
+    return jsonify({'result' : 'success', 'updated' :updated })
+
+
+
+    
+@model_saved.connect
+def model_saved_signal(app, message, **extra):
+#check what page/template is beind rendered
+    add_event(message)
+    
+   #signals_events.append(obj)
+    
+    
+
+@views.route('/update_dashboard', methods=['GET'])
+@login_required
+def update_dashboard():
+    #TODO 
+    #app.logger.info(len(signals_events))
+    #print(len(signals_events)) 
+    
+    if (len(signals_events)!=0):    
+        return jsonify({'result' : 'noresult'})
+    else:
+        #updated=signals_events.pop()
+        
+        updated=PowerLog.query.order_by(PowerLog.rdate.desc()).filter_by(sensor='power_sensor1').first() #teste
+        if (type(updated) is PowerLog):
+            result = powerlog_schema.dump(updated)
+            pprint(result.data)
+            return powerlog_schema.jsonify(updated)
+        else :
+            result = sensorlog_schema.dump(updated)
+            pprint(result.data)
+            return sensorlog_schema.jsonify(updated)
+        
+        #return jsonify({'result' : 'sucess','Object':type(updated),'new_value': updated.volt if (type(updated) is PowerLog) else updated.value})   
+        #return jsonify({'result' : 'success','new_value': updated.value})
+        
 
     
     

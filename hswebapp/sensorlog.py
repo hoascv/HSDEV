@@ -39,26 +39,24 @@ humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 23)
 
 
 if humidity is not None and temperature is not None:
-    reading = TempLog(datetime.now(),'livingroom','AM2302',temperature)
+    reading = TempLog('temperature_sensor1',datetime.now(),'livingroom','AM2302',temperature)
     reading.save_to_db()
-    readingH= HumidityLog(datetime.now(),'livingroom','AM2302',humidity)
+    readingH= HumidityLog('humidity_sensor1',datetime.now(),'livingroom','AM2302',humidity)
     readingH.save_to_db()
-  #  readingH.close_session()
-
+  
 if values_sensor is not None:
-    temp_reading= TempLog(datetime.now(),'livingroom','BMP180',values_sensor.read_temperature())
+    temp_reading= TempLog('temperature_sensor3',datetime.now(),'livingroom','BMP180',values_sensor.read_temperature())
     temp_reading.save_to_db()
-  #  temp_reading.close_session()
     
-    pressure_reading=PressureLog(datetime.now(),'livingroom','BMP180',values_sensor.read_pressure())
+    pressure_reading=PressureLog('pressure_sensor1',datetime.now(),'livingroom','BMP180',values_sensor.read_pressure())
     pressure_reading.save_to_db()
-  #  pressure_reading.close_session()
+  
 
 mylcd = I2C_LCD_driver.lcd() 
 mylcd.backlight(1)    
-mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
+#mylcd.lcd_display_string("Temp:" + temp_reading.+ " / " +str(reading.value) ,1,0)
 
-mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
+#mylcd.lcd_display_string("Hum:" + str(readingH.value),2,0)
 mylcd.lcd_display_string("Linha3",3,0)
 mylcd.lcd_display_string("Linha4",4,0)
 
@@ -83,19 +81,19 @@ if (data['STATUS']=='REGISTERED'):
     
     data = response()
     
-    power_reading = PowerLog(datetime.now(),'Remote','SolarCell',float(data['SENSOR_VALUE']),0)
+    power_reading = PowerLog('power_sensor1',datetime.now(),'Remote','SolarCell',float(data['SENSOR_VALUE']),0)
     power_reading.save_to_db()
     
     ser.write(b'2')
     sleep(2)
     data = response()
-    reading = TempLog(datetime.now(),'Remote','DH11',data['SENSOR_VALUE'])
+    reading = TempLog('temperature_sensor2',datetime.now(),'Remote','DH11',data['SENSOR_VALUE'])
     reading.save_to_db()
     
     ser.write(b'4')
     sleep(2)
     data = response()
-    reading = HumidityLog(datetime.now(),'Remote','DH11',data['SENSOR_VALUE'])
+    reading = HumidityLog('humidity_sensor2',datetime.now(),'Remote','DH11',data['SENSOR_VALUE'])
     reading.save_to_db()
     
       

@@ -1,0 +1,54 @@
+{% extends "layout/base.html" %}
+
+{% block title %}
+ User List
+{% endblock %}
+{% block content %}
+
+  <div class="container">
+    <h1>Users</h1>
+
+    {% for user in users %}
+
+      <div id="usersection{{ user.id }}" class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Last Login: <span id="userLastLogin{{ user.id }}">{{ user.lastlogin }} created AT: ({{ user.createdAt }}) 
+                                              <span id="userUpdated{{ user.id}}">{{ user.updateAt}}   
+          
+          </span>    </h3>
+        </div>
+
+        <div class="panel-body">
+          <div class="form-inline">
+            <div class="form-group">
+              <label for="nameInput{{ user.id }}">User Name:</label>
+              <input type="text" class="form-control" id="nameInput{{ user.id }}" value="{{ user.username }}">
+            </div>
+
+            <div class="form-group">
+              <label for="emailInput{{ user.id }}">Email</label>
+              <input type="email" class="form-control" id="emailInput{{ user.id }}" value="{{ user.email }}">
+            </div>
+            <div class="form-group">
+              <label for="updatedat{{ user.id }}">Updated at: </label>
+              <input type="text" class="form-control" id="updatedAt{{ user.id }}" value="{{ user.updatedAt }}">
+            </div>
+                   
+            <button class="btn btn-primary updateButton" member_id="{{ user.id }}">Update</button>
+            <div id=teste>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+
+    </div>
+    
+{% endblock%}
+
+{% block scripts %}
+    {{super() }}
+    <script src="{{ url_for('static', filename='js/hswebapp_users.js') }}"></script>
+{% endblock %}
+   

@@ -1,218 +1,133 @@
 {% extends "layout/base.html" %}
 
 {% block meta %}
-<meta http-equiv="refresh" content="60">
+
 
 <head>
+
+    
    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-   <script type="text/javascript">
-      google.charts.load('current', {'packages':['gauge']});
-      google.charts.setOnLoadCallback(drawChartTemp1);
-      google.charts.setOnLoadCallback(drawChartTemp2);
-      google.charts.setOnLoadCallback(drawChartTemp3);
-	  google.charts.setOnLoadCallback(drawChartHum1);
-      google.charts.setOnLoadCallback(drawChartHum2);
-	  google.charts.setOnLoadCallback(drawChartPressure);
-      google.charts.setOnLoadCallback(drawChartPower);
-	   
-      function drawChartTemp1() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Temp ºC', {{temperature_sensor1.value}}]
-         
-        ]);
-
-        var temp_options = {
-		  min: -10, max: 50,
-          width: 440, height: 132,
-		  greenFrom:20, greenTo:30,
-          redFrom: 35, redTo: 50,
-          yellowFrom:30, yellowTo: 35,
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_temp1_div'));
-		chart.draw(data, temp_options);    
-        
-      }
-      
-	  function drawChartTemp2() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Temp ºC', {{temperature_sensor2.value}}]
-         
-        ]);
-
-        var temp_options = {
-		  min: -10, max: 50,
-          width: 440, height: 132,
-		  greenFrom:20, greenTo:30,
-          redFrom: 35, redTo: 50,
-          yellowFrom:30, yellowTo: 35,
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_temp2_div'));
-		chart.draw(data, temp_options);    
-        
-      }
-      
-      
-	  function drawChartTemp3() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Temp ºC', {{temperature_sensor3.value}}]
-         
-        ]);
-
-        var temp_options = {
-		  min: -10, max: 50,
-          width: 440, height: 132,
-		  greenFrom:20, greenTo:30,
-          redFrom: 35, redTo: 50,
-          yellowFrom:30, yellowTo: 35,
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_temp3_div'));
-		chart.draw(data, temp_options);    
-        
-      }
-      
-	  function drawChartHum1() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Humidity %', {{humidity_sensor1.value}}]
-        ]);
-
-        var humidity_options = {
-		  min: 0, max: 100,
-          width: 440, height: 132,
-		  greenFrom:30, greenTo:50,
-          redFrom: 50, redTo: 100,
-          
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_humidity1_div'));
-		chart.draw(data, humidity_options);    
-        
-      }
-      
-	  function drawChartHum2() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Humidity %', {{humidity_sensor2.value}}]
-        ]);
-
-        var humidity_options = {
-		  min: 0, max: 100,
-          width: 440, height: 132,
-		  greenFrom:30, greenTo:50,
-          redFrom: 50, redTo: 100,
-          
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_humidity2_div'));
-		chart.draw(data, humidity_options);    
-        
-      }
-	  function drawChartPressure() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Pressure hPa', {{pressure.value}}]
-        ]);
-
-        var pressure_options = {
-		  min: 960, max: 1040,
-          width: 440, height: 132,
-		  greenFrom:20, greenTo:30,
-          redFrom: 35, redTo: 50,
-          yellowFrom:30, yellowTo: 35,
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_pressure_div'));
-		chart.draw(data, pressure_options);    
-        
-      }	  	
-      function drawChartPower() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['mVolts', {{power.voltage*1000}}]
-        ]);
-
-        var power_options = {
-		  min: 0, max: 6000,
-          width: 440, height: 132,
-		  greenFrom:5000, greenTo:6000,
-          redFrom: 0, redTo: 4499,
-          yellowFrom:4500, yellowTo: 4999,
-          minorTicks: 100
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_power_div'));
-		chart.draw(data, power_options);    
-        
-      }	  	      
-    </script>
-  </head>
+   
+   
+</head>
 
 
 {% endblock %}
 
-{% block content %}
-    
- 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/dashboard.css')}}"> 
+{% endblock %}
+
+
+{% block content %} 
 	
 	<div class="container">
-       <div class="col-xs-6 col-sm-3 col-md-2"  >
-				<div id="chart_temp1_div" style="width: 400px; height: 120px;  "></div>
-                <p style="margin-top:5px;">{{temperature_sensor1.sensorLocation }}:{{temperature_sensor1.rdate.strftime('%H:%M')}}</p>
-	   </div>
+    
+        <div class="col-xs-12 col-sm-6 col-md-2"  >
+		    <div id="chart_temp1_div" style=" height: 130px;text-align:center;"></div>
+                <div class="sensorbox">
+                <p class="dashleft" id="temperature_sensor1value"> {{temperature_sensor1.value}}</p><p class="dashcenter"> ºC</p> 
+                <p class="dashleft" id ="sensor1type">Sens: {{temperature_sensor1.sensorType }}</p>
+                <p class="dashleft"> Min: {{TempLog.get_min_value(temperature_sensor1.sensorType).value }}ºC 
+                                     Max: {{TempLog.get_max_value(temperature_sensor1.sensorType).value }}ºC </p>
+                <p class="dashleft" >{{temperature_sensor1.sensorLocation }}@{{temperature_sensor1.rdate.strftime('%H:%M')}}</p>
+            </div>
+                   
+                
+        </div> 
+	    
+        <div class="col-xs-12 col-sm-6 col-md-2"  >
+            <div id="chart_temp2_div" style=" height: 130px text-align:center;"></div>
+            <div class="sensorbox">
+                <p class="dashleft" id="temperature_sensor2value"> {{temperature_sensor2.value}}</p><p class="dashcenter"> ºC</p> 
+                <p class="dashright" id ="sensor1type">Sens: {{temperature_sensor2.sensorType }}</p>
+                <p class="dashleft"> Min: {{TempLog.get_min_value(temperature_sensor2.sensorType).value }}ºC 
+                                     Max: {{TempLog.get_max_value(temperature_sensor2.sensorType).value }}ºC </p>
+                <p class="dashleft" >{{temperature_sensor2.sensorLocation }}@{{temperature_sensor2.rdate.strftime('%H:%M')}}</p>
+
+            </div>   
+
+        </div> 
 	  
-      <div class="col-xs-6 col-sm-3 col-md-2"  >
-				<div id="chart_temp2_div" style="width: 400px; height: 120px;  "></div>
-                <p style="margin-top:5px;">{{temperature_sensor2.sensorLocation }}:{{temperature_sensor2.rdate.strftime('%H:%M')}}</p>
-	   </div>
-	  
-      <div class="col-xs-6 col-sm-3 col-md-2"  >
-				<div id="chart_temp3_div" style="width: 400px; height: 120px;  "></div>
-                <p style="margin-top:5px;">{{temperature_sensor3.sensorLocation }}:{{temperature_sensor3.rdate.strftime('%H:%M')}}</p>
-	   </div>
-	  
-	   <div class="col-xs-6 col-sm-3 col-md-2" >
-				<div id="chart_humidity1_div" style="width: 400px; height: 120px" ></div>
-                <p style="margin-top:5px;">{{humidity_sensor1.sensorLocation }}:{{humidity_sensor1.rdate.strftime('%H:%M')}}</p>
-	   </div>
-   	  
-       <div class="col-xs-6 col-sm-3 col-md-2" >
-				<div id="chart_humidity2_div" style="width: 400px; height: 120px" ></div>
-                <p style="margin-top:5px;">{{humidity_sensor2.sensorLocation }}:{{humidity_sensor2.rdate.strftime('%H:%M')}}</p>
-	   </div>
-       
-	   <div class="col-xs-6 col-sm-3 col-md-2" >
-				<div id="chart_pressure_div" style="width: 400px; height: 120px"></div>
-                <p style="margin-top:5px;">{{pressure.sensorLocation }}:{{pressure.rdate.strftime('%H:%M')}}</p>
-          
-       </div>      
-       
-	   <div class="col-xs-6 col-sm-3 col-md-2" >
-				<div id="chart_power_div" style="width: 400px; height: 120px"></div>
-                <p style="margin-top:5px; center">{{power.sensorLocation }}:{{power.rdate.strftime('%H:%M')}}</p>
-       </div>      
+        <div class="col-xs-12 col-sm-6 col-md-2"  >
+            <div id="chart_temp3_div" style=" height: 130px text-align:center;"></div>
+            <div class="sensorbox">
+                <p class="dashleft" id="temperature_sensor3value"> {{temperature_sensor3.value}}</p><p class="dashcenter"> ºC</p> 
+                <p class="dashright" id ="sensor3type">Sens: {{temperature_sensor3.sensorType }}</p>
+                <p class="dashleft"> Min: {{TempLog.get_min_value(temperature_sensor3.sensorType).value }}ºC 
+                                     Max: {{TempLog.get_max_value(temperature_sensor3.sensorType).value }}ºC </p>
+                <p class="dashleft" >{{temperature_sensor3.sensorLocation }}@{{temperature_sensor3.rdate.strftime('%H:%M')}}</p>
+
+            </div>   
+
+
+        </div>     
+        
+        <div class="col-xs-12 col-sm-6 col-md-2"  >
+		    <div id="chart_humidity1_div" style=" height: 130px;text-align:center;"></div>
+            <div class="sensorbox">
+                <p class="dashleft" id="humidity_sensor1value"> {{humidity_sensor1.value}}</p><p class="dashcenter"> %</p> 
+                <p class="dashleft" id ="sensor1type">Sens: {{humidity_sensor1.sensorType }}</p>
+                <p class="dashleft"> Min: {{HumidityLog.get_min_value(humidity_sensor1.sensorType).value }} % 
+                                     Max: {{HumidityLog.get_max_value(humidity_sensor1.sensorType).value }} % </p>
+                <p class="dashleft" >{{humidity_sensor1.sensorLocation }} @ {{humidity_sensor1.rdate.strftime('%H:%M')}}</p>
+            </div>
+                          
+        </div> 
+	    
+           	  
+        <div class="col-xs-12 col-sm-6 col-md-2" >
+		    <div id="chart_humidity2_div" style=" height: 130px; text-align:center;" ></div>
+            <div class="sensorbox">
+                    <p class="dashleft" id="humidity_sensor2value"> {{humidity_sensor2.value}}</p><p class="dashcenter"> %</p> 
+                    <p class="dashleft" id ="sensor1type">Sens: {{humidity_sensor2.sensorType }}</p>
+                    <p class="dashleft"> Min: {{ HumidityLog.get_min_value(humidity_sensor2.sensorType).value }} %   
+                                     Max: {{HumidityLog.get_max_value(humidity_sensor2.sensorType).value }} % </p>
+                    <p class="dashleft" >{{humidity_sensor2.sensorLocation}} @ {{humidity_sensor2.rdate.strftime('%H:%M')}}</p>
+            </div>
+                 
+	    </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2" >
+		    <div id="chart_pressure_div" style=" height: 130px; text-align:center;" ></div>
+            <div class="sensorbox">
+                    <p class="dashleft" id="pressure_sensor1value"> {{pressure_sensor1.value}}</p><p class="dashcenter"> Pa</p> 
+                    <p class="dashleft" id ="sensor1type">Sens: {{pressure_sensor1.sensorType }}</p>
+                    <p class="dashleft"> Min: {{  PressureLog.get_min_value(pressure_sensor1.sensorType).value }} Pa   
+                                     Max: {{PressureLog.get_max_value(pressure_sensor1.sensorType).value }} Pa </p>
+                    <p class="dashleft" >{{pressure_sensor1.sensorLocation}} @ {{pressure_sensor1.rdate.strftime('%H:%M')}}</p>
+            </div>
+                 
+	    </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2" >
+		    <div id="chart_power_div" style=" height: 130px; text-align:center;" ></div>
+            <div class="sensorbox">
+                    <p class="dashleft" id="power_sensor1value"> {{power_sensor1.voltage *1000}}</p><p class="dashcenter"> mV</p> 
+                    <p class="dashleft" id ="sensor1type">Sens: {{power_sensor1.sensorType }}</p>
+                    <p class="dashleft"> Min: {{  PowerLog.get_min_value(power_sensor1.sensorType).voltage }} V   
+                                     Max: {{PowerLog.get_max_value(power_sensor1.sensorType).voltage }} V </p>
+                    <p class="dashleft" >{{power_sensor1.sensorLocation}} @ {{power_sensor1.rdate.strftime('%H:%M')}}</p>
+            </div>
+                 
+	    </div>
+        
+      
+        
+        
+    </div>
+
+
+    <div >
+            <p id="hsousa"> ?</p>       
+            <p id="hsousa1"> ?</p> 
+        
     </div>    
-	
-   
-
-
-	
 {% endblock %}
+
+{% block scripts %}
+    {{super() }}
+    <script src="{{ url_for('static', filename='js/hswebapp_dashboard.js') }}"></script>
+{% endblock %}
+

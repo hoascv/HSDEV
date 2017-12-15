@@ -1,12 +1,17 @@
 #HS
 
+*.so
+
+# Distribution / packaging
+                               [ Read 112 lines ]
+^G Get Help  ^O WriteOut  ^R Read File ^Y Prev 
 hsvenv/
 hswebapp/config/
 old/
 test/
 hsvenv/
 log/
-hswebapp/log/
+hswebppapp/log/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
