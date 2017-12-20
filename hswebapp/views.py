@@ -1,7 +1,7 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response,Flask,jsonify
 from jinja2 import TemplateNotFound
 from hswebapp import app,db,login_manager,User,model_saved
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sensorlog_schema,powerlog_schema
+from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sensorlog_schema,powerlog_schema,EventLog
 from hswebapp.models.hsutil import Hsutil
 from hswebapp.forms.hswforms import LoginForm,RegisterForm
 import subprocess
@@ -10,6 +10,7 @@ from time import sleep
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_required,login_user,logout_user, current_user
+
 
 
 
@@ -33,10 +34,6 @@ def add_event(message):
 
 
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
   
   
     
@@ -57,6 +54,7 @@ def home():
 
 
 @views.route("/environment")
+@login_required
 def dashboard():
     import sys
  
@@ -100,6 +98,7 @@ def dashboard():
   
         
 @views.route('/readings', methods=["GET"])
+@login_required
 def report_listreadings():
 
    # if request.method == "GET": 
@@ -162,7 +161,7 @@ def system():
 
     
 @views.route('/shutdown',  methods=['POST'])
-
+@login_required
 def shutdown():
     import subprocess
      
@@ -189,7 +188,7 @@ def shutdown():
         
         
 @views.route('/srvmng/<int:option>')
-
+@login_required
 def srvmng(option):
     
     return render_template("pages/srvmng_page.html",option=option)    
@@ -352,37 +351,84 @@ def update_user():
 @model_saved.connect
 def model_saved_signal(app, message, **extra):
 #check what page/template is beind rendered
-    add_event(message)
+    event=EventLog(ob_id=message.get_id(), ob_type=message.get_type())
+    event.save_to_db()
     
-   #signals_events.append(obj)
+ 
     
     
 
-@views.route('/update_dashboard', methods=['GET'])
+@views.route('/update_dashboard', methods=['POST'])
 @login_required
 def update_dashboard():
-    #TODO 
-    #app.logger.info(len(signals_events))
-    #print(len(signals_events)) 
     
-    if (len(signals_events)!=0):    
-        return jsonify({'result' : 'noresult'})
-    else:
-        #updated=signals_events.pop()
+    
+    
+    page_load=(request.form['page_load']) 
+    
+    fmt="YYYY-mm-ddTHH:MM:SS.SSSZ"
+    py_format='YYYY-MM-DDTHH:MM:SS'
+    
+    
+    
+    jsdate=datetime.strptime(page_load, '%Y-%m-%dT%H:%M:%S.%fZ')
+    
+    
+    #ValueError: time data '2017-12-17T20:46:23.438Z' does not match format 'YYYY-MM-DDTHH:MM:SS'
+    #datetime_object = datetime.strptime(page_load,py_format)
+    print('##############date###################')
+    print(jsdate)
+    print('##############date###################')        
+    #now_utc = datetime.now(timezone('UTC'))
+    
+    try:
+        if  (EventLog.query.count()==0) :
+            return jsonify({'result' : 'no_data','last_Attempt': datetime.now()})
+        else: 
+            event = EventLog.query.order_by(EventLog.id.asc()).first()
         
-        updated=PowerLog.query.order_by(PowerLog.rdate.desc()).filter_by(sensor='power_sensor1').first() #teste
-        if (type(updated) is PowerLog):
-            result = powerlog_schema.dump(updated)
-            pprint(result.data)
-            return powerlog_schema.jsonify(updated)
-        else :
-            result = sensorlog_schema.dump(updated)
-            pprint(result.data)
-            return sensorlog_schema.jsonify(updated)
         
-        #return jsonify({'result' : 'sucess','Object':type(updated),'new_value': updated.volt if (type(updated) is PowerLog) else updated.value})   
-        #return jsonify({'result' : 'success','new_value': updated.value})
+    except:
+        app.logger.error("InvalidRequestError: {} ".format(sys.exc_info()[0]))
         
+        raise
+        db.session.rollback()
+        return jsonify({'result' : 'no_data','last_Attempt': datetime.now()})
+    finally:
+        db.session.close()
+ 
+            
+    if (event.ob_type=='TempLog'):
+        updated=TempLog.query.filter_by(id=event.ob_id).first()
+      
+    elif (event.ob_type=='HumidityLog'):
+        updated=HumidityLog.query.filter_by(id=event.ob_id).first()   
+    elif (event.ob_type=='PressureLog'):
+        updated=PressureLog.query.filter_by(id=event.ob_id).first()   
+    elif (event.ob_type=='PowerLog'):
+        updated=PowerLog.query.filter_by(id=event.ob_id).first() 
+
+    event.delete_from_db()
+        
+        
+        
+    if (type(updated) is PowerLog):
+        result = powerlog_schema.dump(updated)
+        return poewrlog_schema.jsonify(updated)
+    else :
+        result = sensorlog_schema.dump(updated)
+        pprint(result)
+        return sensorlog_schema.jsonify(updated)
+        
+
+@views.route('/update_event', methods=['POST'])
+@login_required
+def dashboard_event():
+    pass
+    
+# retreive the the time that the page has been loaded and return the next event_id to be refreshed
+# 
+
 
     
     

@@ -10,6 +10,7 @@ from datetime import datetime
 from blinker import Namespace
 from flask_marshmallow import Marshmallow
 
+from flask_migrate import Migrate
  
 
 
@@ -24,6 +25,18 @@ bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
+migrate = Migrate(app,db)
+
+
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+
+
+
+
 login_manager = LoginManager(app) 
 login_manager.login_view = 'views.login'
 
@@ -32,18 +45,6 @@ login_manager.login_view = 'views.login'
 my_signals = Namespace()
 
 model_saved = my_signals.signal('model-saved')
-
-
-#@model_saved.connect
-#def model_saved_signal(app, message, **extra):
-#    msg=message
-#    print('intit '+ msg)
-    
-    
-
-
-
-
 
 
 class User(UserMixin,db.Model): ## move class User to models.py 

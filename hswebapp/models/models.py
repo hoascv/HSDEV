@@ -60,13 +60,16 @@ class HumidityLog(db.Model):
         db.session.delete(self)
         db.session.commit()
       
-   
+    def get_value(self):
+        return str(self.value)+'%'
         
     def close_session(self):
         db.session.close()
     
-   
+    def get_id(self):
+        return self.id
     
+   
     def get_type(self):
         return type(self).__name__    
 		
@@ -99,6 +102,9 @@ class TempLog(db.Model):
         return cls.query.filter_by(sensorType=sensorType).order_by(cls.value.asc()).first()
     
     
+    
+    
+    
     def save_to_db(self):
         try: 
             db.session.add(self)
@@ -123,10 +129,13 @@ class TempLog(db.Model):
         db.session.close()
     
     def get_value(self):
-        return str(self.value)
+        return str(self.value) +'C' 
         
     def get_type(self):
         return type(self).__name__    
+    
+    def get_id(self):
+        return self.id
         
         
         
@@ -147,7 +156,9 @@ class SensorLogSchema(ma.Schema):
     sensorType = fields.String()
     type = TypeObject()    
     type_data = fields.Method("get_type_data")
-
+   
+    
+    
     def get_type_data(self, obj):
         return type(obj).__name__
         
@@ -173,7 +184,6 @@ powerlog_schema = PowerLogSchema()
 powerlogs_schema =PowerLogSchema(many=True)
 
 
- 
  
 class PressureLog(db.Model):
     __tablename__ = 'pressurelog'
@@ -223,9 +233,17 @@ class PressureLog(db.Model):
     def close_session(self):
         db.session.close()
         
+    def get_value(self):
+        return str(self.value)+'Pa'    
+    
     def get_type(self):
         return type(self).__name__    
 
+    def get_id(self):
+        return self.id
+        
+        
+        
 class PowerLog(db.Model):
     __tablename__ = 'powerlog'
     id = db.Column(db.Integer, primary_key= True)
@@ -287,7 +305,12 @@ class PowerLog(db.Model):
     
     def get_type(self):
         return type(self).__name__    
-            
+    
+    def get_id(self):
+        return self.id
+        
+
+    
 #class User(UserMixin,db.Model):
 #    id = db.Column(db.Integer,primary_key=True)
 #    username= db.Column(db.String(15), unique=True)
@@ -299,3 +322,24 @@ class PowerLog(db.Model):
     
 		
 #db.create_all()
+class EventLog(db.Model):
+    id          = db.Column(db.Integer, primary_key= True)
+    ob_id       = db.Column(db.Integer)
+    date_added  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    ob_type     = db.Column(db.String(30))
+ 
+    def save_to_db(self):
+        try: 
+            db.session.add(self)
+            db.session.commit()
+                
+        except:
+            raise
+            db.session.rollback()
+        
+        finally:
+            pass 
+            
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()        

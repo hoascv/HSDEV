@@ -31,34 +31,37 @@
                 <p class="dashleft" id ="sensor1type">Sens: {{temperature_sensor1.sensorType }}</p>
                 <p class="dashleft"> Min: {{TempLog.get_min_value(temperature_sensor1.sensorType).value }}ºC 
                                      Max: {{TempLog.get_max_value(temperature_sensor1.sensorType).value }}ºC </p>
-                <p class="dashleft" >{{temperature_sensor1.sensorLocation }}@{{temperature_sensor1.rdate.strftime('%H:%M')}}</p>
+                <p class="dashleft" >{{temperature_sensor1.sensorLocation }} </p> <p class="dashcenter"> @ {{temperature_sensor1.rdate.strftime('%H:%M')}}</p>
+                <p id="temperature_sensor1updated" class='hidden' >{{temperature_sensor1.rdate}}</p>
             </div>
                    
                 
         </div> 
 	    
         <div class="col-xs-12 col-sm-6 col-md-2"  >
-            <div id="chart_temp2_div" style=" height: 130px text-align:center;"></div>
-            <div class="sensorbox">
-                <p class="dashleft" id="temperature_sensor2value"> {{temperature_sensor2.value}}</p><p class="dashcenter"> ºC</p> 
-                <p class="dashright" id ="sensor1type">Sens: {{temperature_sensor2.sensorType }}</p>
+		    <div id="chart_temp2_div" style=" height: 130px;text-align:center;"></div>
+                <div class="sensorbox">
+                <p class="dashleft" id="temperature_sensor2value">{{temperature_sensor2.value}}</p><p class="dashcenter"> ºC</p> 
+                <p class="dashleft" id ="sensor2type">Sens: {{temperature_sensor2.sensorType }}</p>
                 <p class="dashleft"> Min: {{TempLog.get_min_value(temperature_sensor2.sensorType).value }}ºC 
                                      Max: {{TempLog.get_max_value(temperature_sensor2.sensorType).value }}ºC </p>
-                <p class="dashleft" >{{temperature_sensor2.sensorLocation }}@{{temperature_sensor2.rdate.strftime('%H:%M')}}</p>
-
-            </div>   
-
+                <p class="dashleft" >{{temperature_sensor2.sensorLocation }} </p> <p class="dashcenter"> @ {{temperature_sensor2.rdate.strftime('%H:%M')}}</p>
+                <p id="temperature_sensor1updated" class='hidden' >{{temperature_sensor2.rdate}}</p>
+            </div>
+                   
+                
         </div> 
-	  
+        
         <div class="col-xs-12 col-sm-6 col-md-2"  >
-            <div id="chart_temp3_div" style=" height: 130px text-align:center;"></div>
+            <div id="chart_temp3_div" style=" height: 130px; text-align:center;"></div>
             <div class="sensorbox">
                 <p class="dashleft" id="temperature_sensor3value"> {{temperature_sensor3.value}}</p><p class="dashcenter"> ºC</p> 
                 <p class="dashright" id ="sensor3type">Sens: {{temperature_sensor3.sensorType }}</p>
                 <p class="dashleft"> Min: {{TempLog.get_min_value(temperature_sensor3.sensorType).value }}ºC 
                                      Max: {{TempLog.get_max_value(temperature_sensor3.sensorType).value }}ºC </p>
                 <p class="dashleft" >{{temperature_sensor3.sensorLocation }}@{{temperature_sensor3.rdate.strftime('%H:%M')}}</p>
-
+                <p id="temperature_sensor3updated" class='hidden' >{{temperature_sensor3.rdate}}</p>
+    
             </div>   
 
 
@@ -72,6 +75,7 @@
                 <p class="dashleft"> Min: {{HumidityLog.get_min_value(humidity_sensor1.sensorType).value }} % 
                                      Max: {{HumidityLog.get_max_value(humidity_sensor1.sensorType).value }} % </p>
                 <p class="dashleft" >{{humidity_sensor1.sensorLocation }} @ {{humidity_sensor1.rdate.strftime('%H:%M')}}</p>
+                <p id="humidity_sensor1updated" class='hidden' >{{humidity_sensor1.rdate}}</p>
             </div>
                           
         </div> 
@@ -85,6 +89,7 @@
                     <p class="dashleft"> Min: {{ HumidityLog.get_min_value(humidity_sensor2.sensorType).value }} %   
                                      Max: {{HumidityLog.get_max_value(humidity_sensor2.sensorType).value }} % </p>
                     <p class="dashleft" >{{humidity_sensor2.sensorLocation}} @ {{humidity_sensor2.rdate.strftime('%H:%M')}}</p>
+                    <p id="humidity_sensor2updated" class='hidden' >{{humidity_sensor2.rdate}}</p>
             </div>
                  
 	    </div>
@@ -97,6 +102,7 @@
                     <p class="dashleft"> Min: {{  PressureLog.get_min_value(pressure_sensor1.sensorType).value }} Pa   
                                      Max: {{PressureLog.get_max_value(pressure_sensor1.sensorType).value }} Pa </p>
                     <p class="dashleft" >{{pressure_sensor1.sensorLocation}} @ {{pressure_sensor1.rdate.strftime('%H:%M')}}</p>
+                    <p id="pressure_sensor1updated" class='hidden' >{{pressure_sensor1.rdate}}</p>
             </div>
                  
 	    </div>
@@ -109,6 +115,7 @@
                     <p class="dashleft"> Min: {{  PowerLog.get_min_value(power_sensor1.sensorType).voltage }} V   
                                      Max: {{PowerLog.get_max_value(power_sensor1.sensorType).voltage }} V </p>
                     <p class="dashleft" >{{power_sensor1.sensorLocation}} @ {{power_sensor1.rdate.strftime('%H:%M')}}</p>
+                    <p id="power_sensor1updated" class='hidden' >{{power_sensor1.rdate}}</p>
             </div>
                  
 	    </div>
@@ -120,8 +127,8 @@
 
 
     <div >
-            <p id="hsousa"> ?</p>       
-            <p id="hsousa1"> ?</p> 
+            <p id="hsousa">... </p>       
+            <p id="hsousa1">...</p> 
         
     </div>    
 {% endblock %}

@@ -1,5 +1,6 @@
-var update_pool=2000;    
-
+var update_pool=10000;    
+var page_load=new Date();
+ 
 $(document).ready(function() {
 
     
@@ -181,20 +182,21 @@ $(document).ready(function() {
         
         req = $.ajax({
             url : '/update_dashboard',
-            type : 'GET'
-            
+            type : 'POST',
+            data : { page_load : page_load.toJSON(),date: {hs:'helder',ls:'louise'}}
         });
 
         req.done(function(data) {
            
             
-            if (data.result!='noresult'){     
+            if (data.result!='no_data'){     
                 
                 //$('#usersection'+user_id).fadeOut(1000).fadeIn(1000);
                 //$('#response'+user_id).css('color','blue');
                 //$('#updatedAt'+user_id).val(data.updated); 
                 
-                $('#hsousa').text("last update sensor: "+data.sensor + " value:"+ data.voltage + ' date: ' + data.rdate+ "  TYPE:"+data.type_data);
+                $('#hsousa').text("last update sensor: "+data.sensor + " value:"+ data.value + ' date: ' + data.rdate+ "  TYPE:"  +data.type_data                  ).fadeOut(1000).fadeIn(1000);
+                $('#hsousa1').text('');
                 
                 //$('#sensor1value').text(data.value);
                 if (data.type_data=='PowerLog'){
@@ -208,7 +210,7 @@ $(document).ready(function() {
                 }
             }   
             else{
-                  $('#hsousa1').text(data.result);
+                  $('#hsousa1').text(data.result +' Last Attempt: '+ data.last_Attempt).fadeOut(1000).fadeIn(1000);
             }
                 
         drawChartTemp1();

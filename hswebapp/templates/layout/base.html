@@ -8,7 +8,7 @@
 {% block meta %}
 <meta name="description" content="">
 <meta name="author" content="">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% endblock %}
 <!-- /meta -->
 
@@ -66,12 +66,14 @@
               <a class="dropdown-toggle"data-toggle="dropdown">Reports<b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="{{ url_for('views.report_listreadings') }}">Log</a></li>
+                
+                
                 <li><a href="{{ url_for('views.report_grafics') }}">Grafics</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Delete</li>
                 <li><a>Delete Last</a></li>
-                <li><a>Delete All</a></li>
-              </ul>
+                
+             </ul>
             </li>
 
             <li {% if request.endpoint == 'views.about1' %} class="active" {% endif %}><a href="{{ url_for('views.about1') }}">About</a></li>

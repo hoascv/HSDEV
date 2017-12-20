@@ -13,30 +13,39 @@
       function drawChartTempCurve() {
         var data = new google.visualization.DataTable();
 		data.addColumn('datetime', 'Time');    
-        data.addColumn('number', 'Temperature ºC');      
-             
+        data.addColumn('number', 'sensor1 ºC');
+       // data.addColumn('number', 'sensor2 ºC');
+       // data.addColumn('number', 'sensor3 ºC');   
+      
+          
+      
       
       data.addRows([
           {% for rtemp in temp %}
 		   {% if rtemp.sensorType == 'AM2302' %}
+           
+           
+           
+           
             [new Date({{rtemp.rdate.year}},{{rtemp.rdate.month}}-1,{{rtemp.rdate.day}},{{rtemp.rdate.hour}},{{rtemp.rdate.minute}})
-            
-            ,{{'%0.2f'|format(rtemp.value)}}],
+            ,{{'%0.2f'|format(rtemp.value)}}                ],
 			{% endif %}
           {% endfor %}
         ]);
+        
 		
 
         var options = {
-          title: 'Temperature readings',
+          title: 'Temperature',
           curveType: 'function',
 		  hAxis: {
           title: "Date",
           gridlines: { count: 10, color: '#FFFFFF' },
           format: 'dd-MM HH:mm' },
-		  
+		  aggregationTarget: 'auto',
 		  vAxis: {
           title: 'Degrees'
+          
           },
 		  
 		  

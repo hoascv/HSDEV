@@ -1,6 +1,7 @@
+
 p { margin:0 }
 
-
+p.hidden {display:none}
 
 
 .dashleft {margin-left:10px;display:inline-block;}
