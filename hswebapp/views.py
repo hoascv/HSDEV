@@ -5,6 +5,7 @@ from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sens
 from hswebapp.models.hsutil import Hsutil
 from hswebapp.forms.hswforms import LoginForm,RegisterForm
 import subprocess
+import sys
 from datetime import datetime
 from time import sleep
 from sqlalchemy.exc import IntegrityError
@@ -100,10 +101,23 @@ def dashboard():
 @views.route('/readings', methods=["GET"])
 @login_required
 def report_listreadings():
-
-   # if request.method == "GET": 
+    try:
+        temperature = TempLog.query.order_by(TempLog.rdate.desc()).limit(50).all()
+        humidity = HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(50).all()
+        pressure = PressureLog.query.order_by(PressureLog.rdate.desc()).limit(50).all()
+        power = PowerLog.query.order_by(PowerLog.rdate.desc()).limit(50).all()
     
-    return render_template("readings.html", temperature = TempLog.query.order_by(TempLog.rdate.desc()).limit(50).all(), humidity = HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(50).all(), pressure = PressureLog.query.order_by(PressureLog.rdate.desc()).limit(50).all(), power = PowerLog.query.order_by(PowerLog.rdate.desc()).limit(50).all())
+    except:
+        flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
+        
+        raise
+        db.session.rollback()
+        return redirect(url_for('home'))
+    finally:
+        db.session.close()
+        
+   
+    return render_template("readings.html", temperature = temperature,humidity =humidity, pressure = pressure, power = power)
                
 
 @views.route('/grafics', methods=["GET"])
@@ -269,7 +283,11 @@ def register():
             db.session.rollback()
             flash('Error! Sorry for the inconvinience The issue has been logged and it will be solved asap')
             return render_template("pages/hsw_signup.html",form = form)
-            
+        
+        finally:
+            db.session.close()
+    
+                         
         flash('The user: {} has been created'.format(form.username.data))                
         return redirect(url_for('views.login'))
         
@@ -280,26 +298,38 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
     
-            
-        user = User.query.filter_by(username=form.username.data).first()
-        if (user):
-            if check_password_hash(user.password,form.password.data):
-                user.lastlogin = datetime.now()
-                db.session.commit()
+        try:    
+            user = User.query.filter_by(username=form.username.data).first()
+        
+        
+            if (user):
+                if check_password_hash(user.password,form.password.data):
+                    user.lastlogin = datetime.now()
+                    db.session.commit()
                 
-                login_user(user,remember=form.rememberme.data)
-                #TODO IMPLEMENT REDIRECT GET THE NEXT
-                #next = request.args.get('next')
-                #if not is_safe_url(nextform):
-                #    return flask.abort(400)
-                #http://flask.pocoo.org/snippets/62/
-                #return redirect(url_for(next))
-                return redirect(url_for('views.home'))
-            
-            flash('Invalid password')
+                    login_user(user,remember=form.rememberme.data)
+                    #TODO IMPLEMENT REDIRECT GET THE NEXT
+                    #next = request.args.get('next')
+                    #if not is_safe_url(nextform):
+                    #    return flask.abort(400)
+                    #http://flask.pocoo.org/snippets/62/
+                    #return redirect(url_for(next))
+                    return redirect(url_for('views.home'))
+        
+                flash('Invalid password')
+                return render_template("pages/hsw_login.html",form = form)
+            flash('User does not exist')
             return render_template("pages/hsw_login.html",form = form)
-        flash('User does not exist')
-        return render_template("pages/hsw_login.html",form = form)
+    
+        except:
+            flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
+        
+            raise
+            db.session.rollback()
+            return redirect(url_for('home'))
+        
+        finally:
+            db.session.close()
     
     return render_template("pages/hsw_login.html",form = form)
 
@@ -316,6 +346,7 @@ def logout():
 @views.route('/users')
 @login_required
 def system_users():
+    #treat exception
     users = User.query.all()
     return render_template('pages/system_users.html', users=users)
     
@@ -351,8 +382,17 @@ def update_user():
 @model_saved.connect
 def model_saved_signal(app, message, **extra):
 #check what page/template is beind rendered
-    event=EventLog(ob_id=message.get_id(), ob_type=message.get_type())
-    event.save_to_db()
+    
+    try:
+        event=EventLog(ob_id=message.get_id(), ob_type=message.get_type())
+        event.save_to_db()
+    
+    except Exception as e:
+        app.logger.error('Update error: {}'.format(e))
+        db.session.rollback()
+    
+    finally:
+        db.session.close()
     
  
     
@@ -394,10 +434,9 @@ def update_dashboard():
         raise
         db.session.rollback()
         return jsonify({'result' : 'no_data','last_Attempt': datetime.now()})
-    finally:
-        db.session.close()
- 
-            
+    
+    
+        
     if (event.ob_type=='TempLog'):
         updated=TempLog.query.filter_by(id=event.ob_id).first()
       
@@ -407,17 +446,18 @@ def update_dashboard():
         updated=PressureLog.query.filter_by(id=event.ob_id).first()   
     elif (event.ob_type=='PowerLog'):
         updated=PowerLog.query.filter_by(id=event.ob_id).first() 
-
+    
     event.delete_from_db()
-        
-        
-        
+    
+    
+    
+
     if (type(updated) is PowerLog):
         result = powerlog_schema.dump(updated)
-        return poewrlog_schema.jsonify(updated)
+        return powerlog_schema.jsonify(updated)
     else :
         result = sensorlog_schema.dump(updated)
-        pprint(result)
+        #pprint(result)
         return sensorlog_schema.jsonify(updated)
         
 

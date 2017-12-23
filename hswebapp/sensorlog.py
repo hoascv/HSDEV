@@ -20,11 +20,13 @@ def response():
         app.logger.info("Waiting: {}".format(ser.in_waiting))
         raw = str(ser.readline(),'utf-8')    
         line = raw.replace("\r\n","")
+              
         app.logger.info("Received: {}".format(line))
         data = ast.literal_eval(line)
+       
         
-    except:
-         app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {}'.format(datetime.now()))
+    except Exception as e:
+         app.logger.error('UNABLE TO GET DATA FROM THE DEVICE SENSOR: {} {}'.format(datetime.now(),e))
          data={'STATUS':'UNABLE TO GET DATA FROM THE DEVICE SENSOR'}
     
     return data
@@ -54,9 +56,9 @@ if values_sensor is not None:
 
 mylcd = I2C_LCD_driver.lcd() 
 mylcd.backlight(1)    
-mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
+#mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
 
-mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
+#mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
 mylcd.lcd_display_string("Linha3",3,0)
 mylcd.lcd_display_string("Linha4",4,0)
 
@@ -67,6 +69,7 @@ mylcd.lcd_display_string("Linha4",4,0)
   
 ser = serial.Serial ("/dev/ttyS0",timeout=4)    #Open named port 
 ser.baudrate = 57600                     #Set baud rate to 57600
+
 
 ser.write(b'0')
 sleep(2)

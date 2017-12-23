@@ -60,7 +60,7 @@ class HumidityLog(db.Model):
         db.session.delete(self)
         db.session.commit()
       
-    def get_value(self):
+    def get_humidity(self):
         return str(self.value)+'%'
         
     def close_session(self):
@@ -128,7 +128,7 @@ class TempLog(db.Model):
     def close_session(self):
         db.session.close()
     
-    def get_value(self):
+    def get_temperature(self):
         return str(self.value) +'C' 
         
     def get_type(self):
@@ -327,6 +327,7 @@ class EventLog(db.Model):
     ob_id       = db.Column(db.Integer)
     date_added  = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     ob_type     = db.Column(db.String(30))
+    obs         = db.Column(db.String(50))
  
     def save_to_db(self):
         try: 
