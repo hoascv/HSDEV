@@ -161,22 +161,6 @@ $(document).ready(function() {
       }  
  
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
     setInterval(function(){
         var new_value=0
         
@@ -195,8 +179,8 @@ $(document).ready(function() {
                 //$('#response'+user_id).css('color','blue');
                 //$('#updatedAt'+user_id).val(data.updated); 
                 
-                $('#hsousa').text("last update sensor: "+data.sensor + " value:"+ data.value + ' date: ' + data.rdate+ "  TYPE:"  +data.type_data                  ).fadeOut(1000).fadeIn(1000);
-                $('#hsousa1').text('');
+                $('#info_update_sucess').text("last update sensor: "+data.sensor + " value:"+ data.value + ' date: ' + data.rdate+ "  type: "  +data.type_data                  ).fadeOut(1000).fadeIn(1000);
+                $('#info_update_error').text('');
                 
                 //$('#sensor1value').text(data.value);
                 if (data.type_data=='PowerLog'){
@@ -210,7 +194,7 @@ $(document).ready(function() {
                 }
             }   
             else{
-                  $('#hsousa1').text(data.result +' Last Attempt: '+ data.last_Attempt).fadeOut(1000).fadeIn(1000);
+                  $('#info_update_error').text(data.result +' Last attempt: '+ data.last_Attempt).fadeOut(1000).fadeIn(1000);
             }
                 
         drawChartTemp1();

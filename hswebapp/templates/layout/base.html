@@ -81,11 +81,11 @@
             <li class="dropdown">
               <a class="dropdown-toggle"data-toggle="dropdown">System<b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li {% if request.endpoint == 'views.system' %} class="active" {% endif %}><a href="{{ url_for('views.system') }}">System Monitor</a></li>
+                <li {% if request.endpoint == 'views.system' %} class="active" {% endif %}><a href="{{ url_for('system.system_info') }}">System Monitor</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Management</li>
-                <li><a href="{{ url_for('views.srvmng',option=1)}}">Reboot</a></li>
-                <li><a href="{{ url_for('views.srvmng',option=0)}}">Shutdown</a></li>
+                <li><a href="{{ url_for('system.srvmng',option=1)}}">Reboot</a></li>
+                <li><a href="{{ url_for('system.srvmng',option=0)}}">Shutdown</a></li>
                 <li><a href="{{ url_for('views.system_users')}}">Users</a></li>
               </ul>
            </li>

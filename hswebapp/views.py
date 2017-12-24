@@ -2,7 +2,7 @@ from flask import Blueprint,render_template,flash, redirect, url_for, request, R
 from jinja2 import TemplateNotFound
 from hswebapp import app,db,login_manager,User,model_saved
 from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sensorlog_schema,powerlog_schema,EventLog
-from hswebapp.models.hsutil import Hsutil
+
 from hswebapp.forms.hswforms import LoginForm,RegisterForm
 import subprocess
 import sys
@@ -12,12 +12,9 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_required,login_user,logout_user, current_user
 
-
-
-
-
-
 views = Blueprint('views', __name__,template_folder='templates')
+
+
 
 signals_events = []
 ##teste
@@ -28,16 +25,6 @@ from marshmallow import pprint
 
 def add_event(message):
     return message
- 
-  #  print(len(signals_events)) 
-    
-#signals_events.append(add_event)
-
-
-
-  
-  
-    
     
 #@login_manager.user_loader
 #def load_user(user_id):
@@ -150,10 +137,7 @@ def report_grafics():
     finally:
         db.session.close()
         
-         
-    
-    #db.session.close()
-    
+        
     if humidity is not None and temperature is not None and values_sensor is not None:
         return render_template("pages/grafics.html",ntemp=result,
                                 temperature=temperature,temp = templog,
@@ -165,88 +149,7 @@ def report_grafics():
     else:
         return render_template("no_sensor.html")
          
-      
-@views.route('/system', methods=["GET"])
-@login_required
-def system():
-    import psutil
-    
-    return render_template("pages/system.html",psuvar=psutil,hsutil = Hsutil)    
-
-    
-@views.route('/shutdown',  methods=['POST'])
-@login_required
-def shutdown():
-    import subprocess
-     
-    reason = request.form['reason']
-    app.logger.info(reason)
-    
-    code = request.form['code']   
-    app.logger.info(code)
-    
-    if (code == "HSS"):    
-        message = "Shutdown initiated at  {} ".format(datetime.now())
-        flash(message)
-        app.logger.info(message)  
-        #cmd = ["ls","-l"]
-        cmd = ["shutdown"]
-        p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            stdin=subprocess.PIPE)
-        out,err = p.communicate()
-        return out
-    else:
-        flash("Code invalid")
-        return render_template('pages/home.html')
-        
-        
-@views.route('/srvmng/<int:option>')
-@login_required
-def srvmng(option):
-    
-    return render_template("pages/srvmng_page.html",option=option)    
    
-
-@views.route('/reboot',  methods=['POST'])
-
-def reboot():
-    import subprocess
-     
-    reason = request.form['reason']
-    app.logger.info(reason)
-    
-    code = request.form['code']   
-    app.logger.info(code)
-    if (code == "HSR"):      
-        message = "Restart initiated at  {} ".format(datetime.now())
-        flash(message)
-        app.logger.info(message) 
-        sleep(20)
-    #cmd = ["ls","-l"]
-        cmd = ["reboot"]
-        p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            stdin=subprocess.PIPE)
-        out,err = p.communicate()
-        return out
-    else:
-        flash("Code Invalid")
-        return render_template('pages/home.html')
-    
-@views.route('/command',  methods=['GET'])  
-def command():
-
-    cmd = ["iwconfig"]
-    
-    p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            stdin=subprocess.PIPE)
-    
-    out,err = p.communicate()
-    
-    return out
-    
     
 @views.route('/about1', methods=["GET"])
 @login_required
