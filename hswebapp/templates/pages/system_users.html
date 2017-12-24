@@ -3,6 +3,14 @@
 {% block title %}
  User List
 {% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/hswebapp_system_users.css')}}"> 
+{% endblock %}
+
+
+
 {% block content %}
 
   <div class="container">
@@ -35,7 +43,11 @@
             </div>
                    
             <button class="btn btn-primary updateButton" member_id="{{ user.id }}">Update</button>
+            <button class="btn btn-primary deleteButton" member_id="{{ user.id }}">Delete</button>
             <div id=teste>.
+            
+            
+            
             </div>
           </div>
         </div>

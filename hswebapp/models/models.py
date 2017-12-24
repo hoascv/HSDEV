@@ -30,6 +30,10 @@ class HumidityLog(db.Model):
         self.sensorType = sensorType
         self.value=value
     
+    def __repr__(self):
+        return '<HumidityLog {}>'.format(self.sensorType)
+    
+    
     def json(self):
         return {'data':self.data,'sensorLocation':self.sensorLocation,'value':self.value,'sensorType':self.sensorType}
 
@@ -88,6 +92,9 @@ class TempLog(db.Model):
         self.sensorLocation = sensorLocation
         self.sensorType = sensorType
         self.value=value
+    
+    def __repr__(self):
+        return '<TempLog {}>'.format(self.sensorType)
     
     def json(self):
         return {'data':self.data,'sensorLocation':self.sensorLocation,'value':self.value,'sensorType':self.sensorType}
@@ -200,6 +207,9 @@ class PressureLog(db.Model):
         self.sensorLocation = sensorLocation
         self.sensorType = sensorType
         self.value=value
+    
+    def __repr__(self):
+        return '<PressureLog {}>'.format(self.sensorType)
         
     def json(self):
         return {'data':self.data,'sensorLocation':self.sensorLocation,'value':self.value,'sensorType':self.sensorType}
@@ -261,6 +271,9 @@ class PowerLog(db.Model):
         self.voltage=voltage
         self.current = current
         self.sensor=sensor
+    
+    def __repr__(self):
+        return '<PowerLog {}>'.format(self.sensorType)
     
     def json(self):
         return {'data':self.data,'sensorLocation':self.sensorLocation,'voltage':self.voltage,'current':self.current,'sensorType':self.sensorType}
