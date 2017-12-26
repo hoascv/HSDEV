@@ -319,7 +319,7 @@ class PowerLog(db.Model):
     def get_type(self):
         return type(self).__name__    
     
-    def get_id(self):
+    def get_id(self): 
         return self.id
         
 

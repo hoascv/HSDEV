@@ -1,40 +1,18 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response,Flask,jsonify
 from jinja2 import TemplateNotFound
-from hswebapp import app,db,login_manager,User,model_saved
+from hswebapp import app,db,login_manager,model_saved
 from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sensorlog_schema,powerlog_schema,EventLog
-
-from hswebapp.forms.hswforms import LoginForm,RegisterForm
-import subprocess
-import sys
+from hswebapp.models.resources import sensorlog_schema,powerlog_schema
 from datetime import datetime
-from time import sleep
 from sqlalchemy.exc import IntegrityError
-from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_required,login_user,logout_user, current_user
 
 views = Blueprint('views', __name__,template_folder='templates')
 
 
-
-signals_events = []
-##teste
-
-from marshmallow import pprint
-
-
-
 def add_event(message):
     return message
-    
-#@login_manager.user_loader
-#def load_user(user_id):
-#    print('print views')
-#    return User.query.get(int(user_id))    
-
-    
-    
-    
-    
+   
     
 @views.route('/')
 def home():
@@ -45,22 +23,19 @@ def home():
 @login_required
 def dashboard():
     import sys
- 
-    try:
-                       
-            temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').first()          
-            temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').first()                        
-            temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').first()
+    
+    try:                       
+        temperature_sensor1= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='AM2302').first()          
+        temperature_sensor2= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='DH11').first()                        
+        temperature_sensor3= TempLog.query.order_by(TempLog.rdate.desc()).filter_by(sensorType='BMP180').first()
+                      
+        humidity_sensor1= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='AM2302').first()     
+        humidity_sensor2= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='DH11').first()        
                         
-            humidity_sensor1= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='AM2302').first()     
-            humidity_sensor2= HumidityLog.query.order_by(HumidityLog.rdate.desc()).filter_by(sensorType='DH11').first()        
-                        
-            pressure_sensor1= PressureLog.query.order_by(PressureLog.rdate.desc()).first()
+        pressure_sensor1= PressureLog.query.order_by(PressureLog.rdate.desc()).first()
             
-            power_sensor1 =   PowerLog.query.order_by(PowerLog.rdate.desc()).first()
-                     
-                         
-
+        power_sensor1 =   PowerLog.query.order_by(PowerLog.rdate.desc()).first()                     
+                       
     except:
         flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
         
@@ -159,99 +134,7 @@ def about1():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("errors/404.html"),404
-
     
-     
-    
-@views.route('/register', methods=['GET','POST'])
-def register():
-    form = RegisterForm()
-    
-    if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data,method='sha256')
-                
-        try:
-            new_user = User(username=form.username.data,email=form.email.data,password=hashed_password,lastlogin=datetime.now())
-            db.session.add(new_user)
-            db.session.commit()
-            
-        except IntegrityError as e:
-            db.session.rollback()
-            flash('The user: {} or the email {} already exists \n Thank you'.format(form.username.data,form.email.data))
-            app.logger.error('Sign up error: {}'.format(e))
-            return render_template("pages/hsw_signup.html",form = form)
-        
-        except Exception as e:
-            app.logger.error('Sign up error: {}'.format(e))
-            db.session.rollback()
-            flash('Error! Sorry for the inconvinience The issue has been logged and it will be solved asap')
-            return render_template("pages/hsw_signup.html",form = form)
-        
-        finally:
-            db.session.close()
-    
-                         
-        flash('The user: {} has been created'.format(form.username.data))                
-        return redirect(url_for('views.login'))
-        
-    return render_template("pages/hsw_signup.html",form = form)
-
-@views.route('/login', methods=['GET','POST'] )
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-    
-        try:    
-            user = User.query.filter_by(username=form.username.data).first()
-        
-        
-            if (user):
-                if check_password_hash(user.password,form.password.data):
-                    user.lastlogin = datetime.now()
-                    db.session.commit()
-                
-                    login_user(user,remember=form.rememberme.data)
-                    #TODO IMPLEMENT REDIRECT GET THE NEXT
-                    #next = request.args.get('next')
-                    #if not is_safe_url(nextform):
-                    #    return flask.abort(400)
-                    #http://flask.pocoo.org/snippets/62/
-                    #return redirect(url_for(next))
-                    return redirect(url_for('views.home'))
-        
-                flash('Invalid password')
-                return render_template("pages/hsw_login.html",form = form)
-            flash('User does not exist')
-            return render_template("pages/hsw_login.html",form = form)
-    
-        except:
-            flash("InvalidRequestError: {} ".format(sys.exc_info()[0]))
-        
-            raise
-            db.session.rollback()
-            return redirect(url_for('home'))
-        
-        finally:
-            db.session.close()
-    
-    return render_template("pages/hsw_login.html",form = form)
-
-@views.route('/logout')
-@login_required
-def logout():
-       
-    logout_user()
-    flash("See ya")
-    return redirect(url_for('views.home'))
-    
-    
-    
-@views.route('/users')
-@login_required
-def system_users():
-    #treat exception
-    users = User.query.all()
-    return render_template('pages/system_users.html', users=users)
     
 
 @views.route('/update_user', methods=['POST'])
@@ -298,30 +181,21 @@ def model_saved_signal(app, message, **extra):
         db.session.close()
     
  
-    
-    
-
 @views.route('/update_dashboard', methods=['POST'])
 @login_required
 def update_dashboard():
-    
-    
-    
+      
     page_load=(request.form['page_load']) 
     
     fmt="YYYY-mm-ddTHH:MM:SS.SSSZ"
-    py_format='YYYY-MM-DDTHH:MM:SS'
-    
-    
-    
+    py_format='YYYY-MM-DDTHH:MM:SS'    
     jsdate=datetime.strptime(page_load, '%Y-%m-%dT%H:%M:%S.%fZ')
-    
-    
+        
     #ValueError: time data '2017-12-17T20:46:23.438Z' does not match format 'YYYY-MM-DDTHH:MM:SS'
     #datetime_object = datetime.strptime(page_load,py_format)
-    print('##############date###################')
-    print(jsdate)
-    print('##############date###################')        
+    #print('##############date###################')
+    #print(jsdate)
+    #print('##############date###################')        
     #now_utc = datetime.now(timezone('UTC'))
     
     try:
@@ -338,8 +212,7 @@ def update_dashboard():
         db.session.rollback()
         return jsonify({'result' : 'no_data','last_Attempt': datetime.now()})
     
-    
-        
+            
     if (event.ob_type=='TempLog'):
         updated=TempLog.query.filter_by(id=event.ob_id).first()
       
@@ -350,10 +223,7 @@ def update_dashboard():
     elif (event.ob_type=='PowerLog'):
         updated=PowerLog.query.filter_by(id=event.ob_id).first() 
     
-    event.delete_from_db()
-    
-    
-    
+    event.delete_from_db()  
 
     if (type(updated) is PowerLog):
         result = powerlog_schema.dump(updated)
@@ -367,10 +237,8 @@ def update_dashboard():
 @views.route('/update_event', methods=['POST'])
 @login_required
 def dashboard_event():
-    pass
-    
+    pass    
 # retreive the the time that the page has been loaded and return the next event_id to be refreshed
-# 
 
 
     

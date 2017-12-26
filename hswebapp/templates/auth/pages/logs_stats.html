@@ -1,0 +1,43 @@
+{% extends "layout/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{super()}}
+
+{% endblock %}
+
+
+
+
+{% block content %}
+    <div class="container">
+    
+    <ul>
+     {% for user in users %}
+     <li> {{user.username }} ({{ user.logs.count()}}) 
+        {% for log in user.logs | sort(attribute='timestamp') %} 
+        
+        <li>
+          type :   {{log.operation}} date: {{log.timestamp}}  
+        </li>
+         {% endfor %}
+     
+     </li>
+     
+     {% endfor %}
+     
+     
+     
+     
+     
+     
+     </ul>
+    
+      
+
+    </div> <!-- /container -->
+
+{% endblock %}
+{% block footer %}
+{{ super() }}
+{% endblock %}

@@ -3,14 +3,15 @@ from flask import Flask,render_template,current_app
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import RotatingFileHandler
-#testing
+
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager,UserMixin
+from flask_login import LoginManager
 from datetime import datetime
 from blinker import Namespace
 from flask_marshmallow import Marshmallow
 
 from flask_migrate import Migrate
+
  
 
 
@@ -33,34 +34,15 @@ migrate = Migrate(app,db)
 def create_tables():
     db.create_all()
 
-
-
-
-
 login_manager = LoginManager(app) 
-login_manager.login_view = 'views.login'
+login_manager.login_view = 'webapp_auth.login'
 
 
 
 my_signals = Namespace()
-
 model_saved = my_signals.signal('model-saved')
 
 
-class User(UserMixin,db.Model): ## move class User to models.py 
-    id = db.Column(db.Integer,primary_key=True)
-    username = db.Column(db.String(15), unique=True)
-    email= db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(80))
-    isadmin = db.Column(db.Boolean)
-    createdAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updatedAt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    lastlogin = db.Column(db.DateTime)
-    acesslevel =db.Column(db.Integer)
-    
-    def __repr__(self):
-        return "<User(name='%s', createdAt='%s')>" % (
-                             self.username, self.createdAt)   
     
 
 @login_manager.user_loader
@@ -74,8 +56,12 @@ handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 
 
+#log sqlalchemy test
 
+#logging.basicConfig()
+#logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
+#sys.stdout
 
 
 
@@ -83,16 +69,21 @@ app.logger.addHandler(handler)
 from hswebapp.views import views
 app.register_blueprint(views)
 
-from hswebapp.webstreaming import webstreaming
-app.register_blueprint(webstreaming)
+from hswebapp.webstreaming import streaming
+app.register_blueprint(streaming)
 
 
-from hswebapp.auth import auth
-app.register_blueprint(auth)
+from hswebapp.auth import webapp_auth
+app.register_blueprint(webapp_auth)
 
 from hswebapp.system import system
 app.register_blueprint(system)
 
+from hswebapp.models.system_models import system_models,User 
+app.register_blueprint(system_models)
+
+from hswebapp.api import apiv0  
+app.register_blueprint(apiv0)
 
 
 

@@ -1,0 +1,44 @@
+{% extends "layout/base.html" %}
+
+{% block title %}
+ User List
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/hswebapp_system_users.css')}}"> 
+{% endblock %}
+
+
+
+{% block content %}
+
+  <div class="container">
+     {% for user in users.items %}
+
+        <div class="alert alert-primary" role="alert">
+          {{ user.username }}
+        </div>
+
+      {% endfor %}
+
+      {% for page in users.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+
+        {% if page %}
+          <a href="{{ url_for('webapp_auth.show_users', page_num=page) }}">{{ page }}</a>
+        {% else %}
+          ...
+        {% endif %}
+
+      {% endfor %}
+      
+
+    </div>
+    
+{% endblock%}
+
+{% block scripts %}
+    {{super() }}
+    <script src="{{ url_for('static', filename='js/hswebapp_users.js') }}"></script>
+{% endblock %}
+   

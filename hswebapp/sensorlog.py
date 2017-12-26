@@ -56,9 +56,9 @@ if values_sensor is not None:
 
 mylcd = I2C_LCD_driver.lcd() 
 mylcd.backlight(1)    
-#mylcd.lcd_display_string("Temp:" + temp_reading.get_value()+ " / " +reading.get_value() ,1,0)
+#mylcd.lcd_display_string("Temp:" + temp_reading.get_temperature()+ " / " +reading.get_ ,1,0)
 
-#mylcd.lcd_display_string("Hum:" + readingH.get_value(),2,0)
+#mylcd.lcd_display_string("Hum:" + readingH.get_humidity(),2,0)
 mylcd.lcd_display_string("Linha3",3,0)
 mylcd.lcd_display_string("Linha4",4,0)
 
