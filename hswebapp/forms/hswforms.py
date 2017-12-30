@@ -1,6 +1,6 @@
 from hswebapp import db
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField,PasswordField,BooleanField,validators,IntegerField,ValidationError
+from wtforms import Form, StringField,PasswordField,BooleanField,DateTimeField,validators,IntegerField,ValidationError,SubmitField,SelectField
 from  wtforms.validators import InputRequired, Email, Length
 
 class LoginForm(FlaskForm):
@@ -43,4 +43,17 @@ class ServerMgmt(FlaskForm):
     code = PasswordField('Code',validators=[InputRequired(),Length(min=4,max=6)])
     #date = StringField('Date',validators=[InputRequired(),Length(min=4,max=15)])
     
+    
+class EditUserForm(FlaskForm):
+    username = StringField('User Name', validators=[InputRequired(),Length(min=4,max=15)])
+    #password = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=80)])
+    email = StringField('Email Address', validators=[InputRequired(),Email(message='Invalid email'),Length(max=50)])
+    isadmin = BooleanField('is Admin')
+    createdAt = DateTimeField('Created At:')
+    updatedAt = DateTimeField('updated At:')
+    lastlogin = DateTimeField('Last login:')
+    isActivated =BooleanField('IsActivated')
+    acess_group =SelectField('Access Group',coerce=int)
+    #http://wtforms.simplecodes.com/docs/0.6/fields.html
+    submit = SubmitField('Update')
     

@@ -86,7 +86,7 @@
                 <li class="dropdown-header">Management</li>
                 <li><a href="{{ url_for('system.srvmng',option=1)}}">Reboot</a></li>
                 <li><a href="{{ url_for('system.srvmng',option=0)}}">Shutdown</a></li>
-                <li><a href="{{ url_for('webapp_auth.system_users')}}">Users</a></li>
+                <li><a href="{{ url_for('webapp_auth.show_users',page_num=1)}}">Users</a></li>
                 <li><a href="{{ url_for('webapp_auth.user_logs')}}">Stats</a></li>
               </ul>
            </li>
@@ -141,7 +141,7 @@
   <div id="footer">
     <div class="container">
       {% block footer %}
-      <p> >> {{ request.endpoint }}</p>
+      <p class="dashleft" id="current_endpoint"> >> {{ request.endpoint }} </p> <p class="dashcenter" id="label_generated">Generated at:</p> <p class="dashcenter" id="generated"></p>     
       <p>HSWEBAPP &copy; All Rights Reserved.</p>
       {% endblock %}
     </div>

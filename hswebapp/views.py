@@ -1,11 +1,12 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response,Flask,jsonify
 from jinja2 import TemplateNotFound
 from hswebapp import app,db,login_manager,model_saved
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,sensorlog_schema,powerlog_schema,EventLog
+from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,EventLog
 from hswebapp.models.resources import sensorlog_schema,powerlog_schema
 from datetime import datetime
-from sqlalchemy.exc import IntegrityError
+#from sqlalchemy.exc import IntegrityError
 from flask_login import login_required,login_user,logout_user, current_user
+from hswebapp.models.system_models import User
 
 views = Blueprint('views', __name__,template_folder='templates')
 
@@ -134,35 +135,6 @@ def about1():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("errors/404.html"),404
-    
-    
-
-@views.route('/update_user', methods=['POST'])
-@login_required
-def update_user():
-    app.logger.info('updating user')
-    updated=datetime.now()
-    try:
-        user = User.query.filter_by(id=request.form['id']).first()
-        user.username = request.form['username']
-        user.email = request.form['email']
-        user.updatedAt = updated
-        
-        db.session.commit()
-        
-    
-    except Exception as e:
-        app.logger.error('Update error: {}'.format(e))
-        db.session.rollback()
-        flash('Error! Sorry for the inconvinience The issue has been logged and it will be solved asap') 
-        return jsonify({'result' : 'error'})
-    
-    finally:
-        db.session.close()
-        
-    return jsonify({'result' : 'success', 'updated' :updated })
-
-
 
     
 @model_saved.connect

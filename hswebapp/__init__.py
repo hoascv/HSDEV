@@ -12,6 +12,7 @@ from flask_marshmallow import Marshmallow
 
 from flask_migrate import Migrate
 
+
  
 
 
@@ -90,5 +91,8 @@ app.register_blueprint(apiv0)
 #app.logger.info('end init')
 #from hswebapp.resources import u
 
+@app.shell_context_processor
+def make_shell_context():
+    return{'db':db,'User':User}
 
 	

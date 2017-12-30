@@ -16,7 +16,7 @@
   <div class="container">
     <h1>Users</h1>
 
-    {% for user in users %}
+    {% for user in users.items %}
 
       <div id="usersection{{ user.id }}" class="panel panel-default">
         <div class="panel-heading">
@@ -30,7 +30,7 @@
           <div class="form-inline">
             <div class="form-group">
               <label for="nameInput{{ user.id }}">User Name:</label>
-              <input type="text" class="form-control" id="nameInput{{ user.id }}" value="{{ user.username }}">
+              <input type="text"  size="10px" class="form-control" id="nameInput{{ user.id }}" value="{{ user.username }}">
             </div>
 
             <div class="form-group">
@@ -43,7 +43,8 @@
             </div>
                    
             <button class="btn btn-primary updateButton" member_id="{{ user.id }}">Update</button>
-            <button class="btn btn-primary deleteButton" member_id="{{ user.id }}">Delete</button>
+            <button class="btn btn-primary deleteUserButton" member_id="{{ user.id }}">Delete</button>
+            <button class="btn btn-primary editUserButton" member_id="{{ user.id }}">Edit</button>
             <div id=teste>.
             
             
@@ -54,6 +55,19 @@
       </div>
 
       {% endfor %}
+      
+      {% for page in users.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+
+        {% if page %}
+          <a href="{{ url_for('webapp_auth.show_users', page_num=page) }}">{{ page }}</a>
+        {% else %}
+          ...
+        {% endif %}
+
+      {% endfor %}
+      
+      
+      
 
     </div>
     

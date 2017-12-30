@@ -2,17 +2,6 @@ from datetime import datetime
 from hswebapp import db,model_saved,ma
 from marshmallow import fields
 
-
-
-
-#from flask_login import UserMixin 
-#temperature_max_sensor1 = TempLog.query.order_by(TempLog.value.desc()).filter_by(sensorType='AM2302').first()
-# create an abstract class 
-
-
-
-#model_saved.connect(model_saved_signal, app)
-
 class HumidityLog(db.Model):
     __tablename__ = 'humiditylog'
     id = db.Column(db.Integer, primary_key= True)
@@ -147,49 +136,6 @@ class TempLog(db.Model):
         
         
  
-class TypeObject(fields.Field):
-    def _serialize(self, obj):
-        return type(obj)
-        
- 
-  
-class SensorLogSchema(ma.Schema):
-    #class Meta:
-        # Fields to expose
-    #fields = ('value', 'sensorType', 'rdate') 
-    sensor= fields.String()
-    value = fields.Float()
-    rdate  = fields.DateTime()
-    sensorType = fields.String()
-    type = TypeObject()    
-    type_data = fields.Method("get_type_data")
-   
-    
-    
-    def get_type_data(self, obj):
-        return type(obj).__name__
-        
- 
-
-sensorlog_schema = SensorLogSchema()
-sensorlogs_schema = SensorLogSchema(many=True) 
-
-class PowerLogSchema(ma.Schema):
-    
-    sensor= fields.String()
-    voltage = fields.Float()
-    current = fields.Float()
-    rdate  = fields.DateTime()
-    sensorType = fields.String()
-    type_data = fields.Method("get_type_data")
-
-    def get_type_data(self, obj):
-        return type(obj).__name__
-        
-
-powerlog_schema = PowerLogSchema()
-powerlogs_schema =PowerLogSchema(many=True)
-
 
  
 class PressureLog(db.Model):

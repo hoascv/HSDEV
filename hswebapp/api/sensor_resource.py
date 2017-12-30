@@ -15,12 +15,12 @@ from hswebapp.models.resources import sensorlogs_schema,powerlogs_schema
 import copy
 
 
-@apiv0.route('/templogs/<int:lastreadings>', methods=['GET'])
+@apiv0.route('/apiv1.0/templogs/<int:lastreadings>', methods=['GET'])
 def get_templogs(lastreadings,):
 
     templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(lastreadings).all()
     result = sensorlogs_schema.dump(templog)
     return jsonify({'templogs': result.data})
+
     
     
-    #return sensorlogs_schema.jsonify(templog)

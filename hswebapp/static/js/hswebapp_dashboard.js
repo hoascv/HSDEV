@@ -2,7 +2,9 @@ var update_pool=100000;
 var page_load=new Date();
  
 $(document).ready(function() {
-
+     
+    $('#generated').text(page_load);
+   
     
     google.charts.load('current', {'packages':['gauge']});
     google.charts.setOnLoadCallback(drawChartTemp1);

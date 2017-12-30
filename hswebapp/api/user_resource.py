@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, Response,jsonify
 from jinja2 import TemplateNotFound
 from hswebapp import app,db
 #from importlib import import_module
@@ -19,9 +19,12 @@ from hswebapp.api import apiv0
 #POST /api/users Register a new user account. User representation given in the body.
 #PUT /api/users/<id> Modify a user. Only allowed to be issued by the user itself.
 
-@apiv0.route('/user/<int:id>', methods=['GET'])
+@apiv0.route('/apiv1/users/<int:id>', methods=['GET'])
 def get_user(id):
-    pass
+    return jsonify(User.query.get_or_404(id).to_dict(True))
+    #user = User.query.get(int(id))
+    #return user.to_dict()
+    
 
 
 
