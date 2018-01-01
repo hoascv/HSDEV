@@ -5,7 +5,7 @@ import  I2C_LCD_driver
 from time import *
 import Adafruit_DHT 
 import Adafruit_BMP.BMP085 as BMP085
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog
+from hswebapp.models.sensor_models import TempLog,HumidityLog,PressureLog,PowerLog
 from hswebapp import app
 from time import sleep
 import serial

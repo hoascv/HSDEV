@@ -101,7 +101,7 @@
             {% block sign %}
             {% if current_user.is_authenticated : %}
                
-                <li> <a href="{{ url_for('webapp_auth.logout') }}">Hi,{{current_user.username}} (logout)  </a>   </li>          
+                <li><a href="{{ url_for('webapp_auth.logout') }}">Hi,{{current_user.username}} (logout)  </a>   </li>          
                
             {% else :%}
             

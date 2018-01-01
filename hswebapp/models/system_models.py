@@ -1,16 +1,19 @@
-from flask import Blueprint,render_template,flash, redirect, url_for, request, Response
-from jinja2 import TemplateNotFound
-from datetime import datetime
-from hswebapp import db,model_saved,ma
-from marshmallow import fields
-from flask_login import LoginManager,UserMixin
+from flask import Blueprint, url_for, request, Response
+from datetime import datetime,timedelta
+from hswebapp import db
+from hswebapp.models.resources import PaginatedAPIMixin
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash,check_password_hash
+import os
+import base64
+
+
 
 system_models = Blueprint('system_models', __name__,template_folder='templates/system')
 
 
 
-class User(UserMixin,db.Model): 
+class User(PaginatedAPIMixin,UserMixin,db.Model): 
     id = db.Column(db.Integer,primary_key=True)
     username = db.Column(db.String(15), unique=True)
     email= db.Column(db.String(50), unique=True)
@@ -22,10 +25,12 @@ class User(UserMixin,db.Model):
     isActivated = db.Column(db.Boolean,default=False)
     acess_group = db.Column(db.Integer,db.ForeignKey('access_group.id'))
     deleted_on= db.Column(db.DateTime, default=datetime.utcnow)
-    
-    
-    
-    
+    #user resource    
+    token = db.Column(db.String(32),index=True,unique=True)
+    token_expiration = db.Column(db.DateTime)
+
+
+
     logs = db.relationship('Logs', backref='log_history', lazy='dynamic')
     
     def __repr__(self):
@@ -39,8 +44,10 @@ class User(UserMixin,db.Model):
             'lastlogin':self.lastlogin,
             'last_updated':self.updatedAt,
             'logs':self.logs.count(),
+            'programs':0,
+             
             '_links': {
-                'self':url_for('apiv0.get_user',id=self.id),
+                'self':'https://hswebapp.com' + url_for('apiv0.get_user',id=self.id),
                 'obs':'add more links'
             }
         }
@@ -61,7 +68,33 @@ class User(UserMixin,db.Model):
     def check_password(self,check_password):
         return check_password_hash(self.password,check_password)    
 
-
+    def get_token(self,expires_in=3600):
+        now=datetime.utcnow()
+        if self.token and self.token_expiration > now + timedelta(seconds=60):
+            return self.token
+        self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
+        self.token_expiration = now + timedelta(seconds=expires_in)
+        db.session.commit()
+        return self.token
+   
+    def revoke_token(self):
+        self.token_expiration = datetime.utcnow()-timedelta(seconds=1)
+    
+    def check_token_is_valid(self):
+        return True if self.token_expiration > datetime.utcnow() else False
+            
+    def check_token_duration(self):
+        return self.token_expiration-datetime.utcnow()
+        
+    
+    @staticmethod
+    def check_token(token):
+        user = User.query.filter_by(token=token).first()
+        if user in None or user.token_expiration < datetime.utcnow():
+            return None
+        return user    
+    
+   
     
 class AccessGroup(db.Model):
     __tablename__ = 'access_group'

@@ -1,7 +1,7 @@
 from flask import Blueprint,render_template,flash, redirect, url_for, request, Response,Flask,jsonify
 from jinja2 import TemplateNotFound
 from hswebapp import app,db,login_manager,model_saved
-from hswebapp.models.models import TempLog,HumidityLog,PressureLog,PowerLog,EventLog
+from hswebapp.models.sensor_models import TempLog,HumidityLog,PressureLog,PowerLog,EventLog
 from hswebapp.models.resources import sensorlog_schema,powerlog_schema
 from datetime import datetime
 #from sqlalchemy.exc import IntegrityError

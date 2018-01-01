@@ -19,12 +19,19 @@ from hswebapp.api import apiv0
 #POST /api/users Register a new user account. User representation given in the body.
 #PUT /api/users/<id> Modify a user. Only allowed to be issued by the user itself.
 
+
 @apiv0.route('/apiv1/users/<int:id>', methods=['GET'])
 def get_user(id):
     return jsonify(User.query.get_or_404(id).to_dict(True))
     #user = User.query.get(int(id))
     #return user.to_dict()
-    
+
+@apiv0.route('/apiv1/users', methods=['GET'])
+def get_users():
+    page = request.args.get('page', 1, type=int)
+    per_page = min(request.args.get('per_page', 2, type=int), 100)
+    data = User.to_collection_dict(User.query, page, per_page, 'apiv0.get_users')
+    return jsonify(data)
 
 
 

@@ -66,7 +66,6 @@ app.logger.addHandler(handler)
 
 
 
-
 from hswebapp.views import views
 app.register_blueprint(views)
 
@@ -84,7 +83,7 @@ from hswebapp.models.system_models import system_models,User
 app.register_blueprint(system_models)
 
 from hswebapp.api import apiv0  
-app.register_blueprint(apiv0)
+app.register_blueprint(apiv0,url_prefix='/api')
 
 
 
