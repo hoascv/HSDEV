@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from hswebapp.models.system_models import User,Logs
 import copy
 from hswebapp.api import apiv0
+from hswebapp.api.auth import token_auth
 
 #GET /api/users/<id> Return a user.
 #GET /api/users Return the collection of all users.
@@ -21,12 +22,15 @@ from hswebapp.api import apiv0
 
 
 @apiv0.route('/apiv1/users/<int:id>', methods=['GET'])
+@token_auth.login_required
 def get_user(id):
+
     return jsonify(User.query.get_or_404(id).to_dict(True))
     #user = User.query.get(int(id))
     #return user.to_dict()
 
 @apiv0.route('/apiv1/users', methods=['GET'])
+@token_auth.login_required
 def get_users():
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 2, type=int), 100)

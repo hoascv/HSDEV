@@ -68,17 +68,20 @@ class User(PaginatedAPIMixin,UserMixin,db.Model):
     def check_password(self,check_password):
         return check_password_hash(self.password,check_password)    
 
-    def get_token(self,expires_in=3600):
+    def get_token(self,expires_in=86500):
         now=datetime.utcnow()
-        if self.token and self.token_expiration > now + timedelta(seconds=60):
+        if self.token and self.token_expiration > (now + timedelta(seconds=60)):
             return self.token
+                       
         self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
         self.token_expiration = now + timedelta(seconds=expires_in)
+        db.session.add(self)
         db.session.commit()
         return self.token
    
     def revoke_token(self):
         self.token_expiration = datetime.utcnow()-timedelta(seconds=1)
+        db.session.commit()
     
     def check_token_is_valid(self):
         return True if self.token_expiration > datetime.utcnow() else False
@@ -89,11 +92,17 @@ class User(PaginatedAPIMixin,UserMixin,db.Model):
     
     @staticmethod
     def check_token(token):
+        print(token)
         user = User.query.filter_by(token=token).first()
-        if user in None or user.token_expiration < datetime.utcnow():
+        if user is None or user.token_expiration < datetime.utcnow():
             return None
         return user    
-    
+
+
+
+
+
+   
    
     
 class AccessGroup(db.Model):

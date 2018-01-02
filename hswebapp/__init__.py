@@ -69,8 +69,8 @@ app.logger.addHandler(handler)
 from hswebapp.views import views
 app.register_blueprint(views)
 
-from hswebapp.webstreaming import streaming
-app.register_blueprint(streaming)
+from hswebapp.ws import wst
+app.register_blueprint(wst)
 
 
 from hswebapp.auth import webapp_auth

@@ -88,6 +88,7 @@
                 <li><a href="{{ url_for('system.srvmng',option=0)}}">Shutdown</a></li>
                 <li><a href="{{ url_for('webapp_auth.show_users',page_num=1)}}">Users</a></li>
                 <li><a href="{{ url_for('webapp_auth.user_logs')}}">Stats</a></li>
+                <li><a href="{{ url_for('wst.webstreaming_func')}}">test</a></li>
               </ul>
            </li>
             
@@ -101,8 +102,9 @@
             {% block sign %}
             {% if current_user.is_authenticated : %}
                
-                <li><a href="{{ url_for('webapp_auth.logout') }}">Hi,{{current_user.username}} (logout)  </a>   </li>          
-               
+                <li><a href="{{ url_for('webapp_auth.logout') }}">Hi,{{current_user.username}} (logout) </a>   </li>          
+                <li><a href="{{ url_for('webapp_auth.edit_user') }}">profile </a>   </li> 
+                
             {% else :%}
             
                 <li><a href="{{ url_for('webapp_auth.register') }}">Signup</a></li>

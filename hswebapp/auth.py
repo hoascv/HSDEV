@@ -140,16 +140,19 @@ def show_users():
 @webapp_auth.route('/edit_user', methods=['GET','POST'] )
 @login_required
 def edit_user():
+    
     form = EditUserForm(obj=current_user)
     form.acess_group.choices = [(g.id, g.description) for g in AccessGroup.query.order_by('id')]
-    
+        
+        
     if (request.method == 'POST' and form.validate_on_submit()==True):
-       
-        form.populate_obj(current_user)
-              
+        
+        form.populate_obj(current_user) 
         db.session.commit()
+        
         flash('Your change(s) has(have) been saved ')
         return redirect(url_for('webapp_auth.edit_user'))
+    db.session.close()  ## close the session on update page problems  
     return render_template('edit_user.html', form=form)
         
   

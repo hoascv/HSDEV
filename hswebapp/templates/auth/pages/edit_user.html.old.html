@@ -1,0 +1,111 @@
+{% extends "layout/base.html" %}
+
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/hswebapp_edit_user.css')}}"> 
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+
+      <form class="form-signin" method="POST" action="/edit_user">
+        <h2 class="form-signin-heading">Edit User</h2>
+        {{ form.hidden_tag() }}
+            <li> 
+                {{ (form.username.label) }} <br>
+                {{form.username(class_= "field-style") }} 
+                 
+                {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+                
+            </li>
+             <p> 
+                {{ (form.email.label) }} <br>
+                {{form.email(size=32) }} <br>
+                
+                {% for error in form.email.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+                
+            </p>
+             
+             
+             
+             <p> 
+                {{ (form.isadmin.label) }} <br>
+                {{form.isadmin }}
+            </p>
+            <p>
+                {{ (form.isActivated.label) }} <br>
+                {{ form.isActivated}}
+            </p>
+        
+            <p>
+                {{ (form.lastlogin.label) }} <br>
+                {{ form.lastlogin}}
+            </p>
+            
+            <p>  {{ (form.updatedAt.label) }} <br>
+                {{ form.updatedAt}}
+            </p>
+            
+            <p>  {{ (form.acess_group.label) }} <br>
+                {{ form.acess_group}}
+            </p>
+            
+            
+            
+            
+            <p>
+                 
+                {{ form.submit}}
+            </p>
+             
+     </form>
+
+     
+     
+     <form class="form-style-9">
+<ul>
+<li>
+     {{form.username(class_= "field-style field-split align-left") }} 
+    
+    <input type="email" name="field2" class="field-style field-split align-right" placeholder="Email" />
+
+</li>
+<li>
+    <input type="text" name="field3" class="field-style field-split align-left" placeholder="Phone" />
+    <input type="url" name="field4" class="field-style field-split align-right" placeholder="Website" />
+</li>
+<li>
+<input type="text" name="field3" class="field-style field-full align-none" placeholder="Subject" />
+</li>
+<li>
+<textarea name="field5" class="field-style" placeholder="Message"></textarea>
+</li>
+<li>
+<input type="submit" value="Send Message" />
+</li>
+</ul>
+</form>
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+    </div> <!-- /container -->
+
+{% endblock %}
+{% block footer %}
+{{ super() }}
+{% endblock %}
