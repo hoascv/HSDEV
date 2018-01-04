@@ -3,7 +3,6 @@ from jinja2 import TemplateNotFound
 from hswebapp import app,db
 from importlib import import_module
 import os
-import sys
 from flask_login import login_required,login_user,logout_user, current_user
 from datetime import datetime
 from time import sleep
@@ -12,6 +11,7 @@ from hswebapp.models.system_models import User,Logs,AccessGroup
 import copy
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
+from hswebapp.models.hsutil import Hsutil
 
 webapp_auth = Blueprint('webapp_auth', __name__,template_folder='templates/auth/pages')
 @webapp_auth.route('/register', methods=['GET','POST'])
@@ -153,7 +153,7 @@ def edit_user():
         flash('Your change(s) has(have) been saved ')
         return redirect(url_for('webapp_auth.edit_user'))
     db.session.close()  ## close the session on update page problems  
-    return render_template('edit_user.html', form=form)
+    return render_template('edit_user.html', form=form,hsutil=Hsutil)
         
   
 @webapp_auth.route('/delete_user', methods=['GET','POST'] )

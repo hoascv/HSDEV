@@ -57,14 +57,21 @@
                             	
 						</div>
                         <div class="row">
-							<div class="col-sm-6 form-group">
+							<div class="col-sm-4 form-group">
 								<label>Token</label>
 								{{ current_user.token }}
 							</div>		
-							<div class="col-sm-6 form-group">
+							<div class="col-sm-4 form-group">
 								<label>expires in:</label>
-								 {{current_user.check_token_duration().days }} days and   {{current_user.check_token_duration().seconds }} seconds 
+                                  {{ hsutil.get_remaining_time(current_user.check_token_duration())}}
+								  
 							</div>	
+                            <div class="col-sm-4 form-group">
+								<label>Renew Token:</label>
+                                  not implemented:(JS and ajax)
+								  
+							</div>	
+                            
 						</div>						
 					
                         

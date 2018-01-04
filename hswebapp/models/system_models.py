@@ -68,9 +68,9 @@ class User(PaginatedAPIMixin,UserMixin,db.Model):
     def check_password(self,check_password):
         return check_password_hash(self.password,check_password)    
 
-    def get_token(self,expires_in=86500):
+    def get_token(self,expires_in=3610):
         now=datetime.utcnow()
-        if self.token and self.token_expiration > (now + timedelta(seconds=60)):
+        if self.token and self.token_expiration > (now + timedelta(seconds=30)):
             return self.token
                        
         self.token = base64.b64encode(os.urandom(24)).decode('utf-8')

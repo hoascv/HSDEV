@@ -30,3 +30,34 @@ class Hsutil:
         ssid= raw [raw.find('"')+1:raw.find('"',raw.find('"')+1, len(raw))]
         lq = raw[(raw.find('Link Quality=')+len('Link Quality=')):((raw.find('Link Quality=')+len('Link Quality'))+6)]
         return {'ssid':ssid,'Link_Quality':lq}
+    
+    @classmethod
+    def get_remaining_time(cls,timedelta):
+        remaining_time=''
+        days=timedelta.days
+        hours=int(timedelta.seconds/3600)
+        minutes = int((timedelta.seconds%3600)/60)
+        seconds = int( (timedelta.seconds)%60)
+        
+        if days < 0 :    
+            return 'Expired'    
+            
+        elif  days > 0 :
+            return ' {} Days {} Hours  {} Minutes {} and seconds'.format(days,hours,minutes,seconds)
+        elif days == 0 and hours > 0 :
+            return ' {} Hours  {} Minutes {} and seconds'.format(hours,minutes,seconds)
+        
+        elif days == 0 and hours == 0 and minutes > 0:
+            return ' {} Minutes {} and seconds'.format(minutes,seconds)
+            
+        else :
+            return '{} seconds'.format(seconds)
+        
+        
+        
+        return remaining_time
+        
+            
+
+            
+    
