@@ -213,6 +213,19 @@ def dashboard_event():
 # retreive the the time that the page has been loaded and return the next event_id to be refreshed
 
 
+@views.route('/export')
+@login_required
+def export():
+    return render_template('pages/export.html',TempLog=TempLog,HumidityLog=HumidityLog,PressureLog=PressureLog)
+   
+   
+
+@views.route('/templog')
+@login_required
+def export_temp_log():
+    last = TempLog.query.order_by(TempLog.rdate.desc()).first()
+    return sensorlog_schema.jsonify(last)
+    
     
     
     

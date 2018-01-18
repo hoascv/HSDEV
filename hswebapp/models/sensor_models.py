@@ -10,6 +10,8 @@ class HumidityLog(db.Model):
     sensorLocation = db.Column(db.String(15))
     value  = db.Column(db.Float(precision=2))
     sensorType = db.Column(db.String(15))
+    exported = db.Column(db.DateTime)
+    
    
     
     def __init__ (self,sensor,rdate,sensorLocation,sensorType,value):
@@ -74,6 +76,7 @@ class TempLog(db.Model):
     sensorLocation = db.Column(db.String(15))
     value  = db.Column(db.Float(precision=2))
     sensorType = db.Column(db.String(15))
+    exported = db.Column(db.DateTime)
     
     def __init__ (self,sensor,rdate,sensorLocation,sensorType,value):
         self.sensor=sensor
@@ -146,6 +149,7 @@ class PressureLog(db.Model):
     sensorLocation = db.Column(db.String(15))
     value  = db.Column(db.Float(precision=2))
     sensorType = db.Column(db.String(15))
+    exported = db.Column(db.DateTime)
     
     def __init__ (self,sensor,rdate,sensorLocation,sensorType,value):
         self.sensor=sensor

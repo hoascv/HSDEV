@@ -48,8 +48,15 @@ model_saved = my_signals.signal('model-saved')
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))   
-
+    try:
+        user = User.query.get(int(user_id))
+    except Exception as e:
+        app.logger.error('Sign up error: {}'.format(e))
+        db.session.rollback()
+                           
+    finally:
+        db.session.close()
+    return user
 
 
 handler = RotatingFileHandler('/var/www/hswebapp/log/app/hswebapp.log', maxBytes=100000, backupCount=10)
