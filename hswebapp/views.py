@@ -2,11 +2,18 @@ from flask import Blueprint,render_template,flash, redirect, url_for, request, R
 from jinja2 import TemplateNotFound
 from hswebapp import app,db,login_manager,model_saved
 from hswebapp.models.sensor_models import TempLog,HumidityLog,PressureLog,PowerLog,EventLog
-from hswebapp.models.resources import sensorlog_schema,powerlog_schema
+from hswebapp.models.resources import sensorlog_schema,powerlog_schema,templog_schema
 from datetime import datetime
+#testing 
+from random import randint
+
 #from sqlalchemy.exc import IntegrityError
 from flask_login import login_required,login_user,logout_user, current_user
 from hswebapp.models.system_models import User
+
+#####
+import requests
+import json
 
 views = Blueprint('views', __name__,template_folder='templates')
 
@@ -213,19 +220,56 @@ def dashboard_event():
 # retreive the the time that the page has been loaded and return the next event_id to be refreshed
 
 
+
+@views.route('/exporting_templog')
+@login_required
+def exporting():
+    
+    #op = randint(0,1)
+    sensor_type = request.args.get('sensor_type', 'PressureLog', type=str)
+    sensor_class = globals()[sensor_type]     
+        
+        
+    try:
+        
+       
+        log = sensor_class.query.with_for_update().filter(sensor_class.exported.is_(None)).order_by(sensor_class.rdate.desc()).first()
+               
+            
+        if (log is None): 
+            return jsonify({'message':'no_data'}),204
+        else :
+            mdata= templog_schema.dump(log).data
+    
+    except Exception as e:
+        app.logger.error('Error reading bd : {}'.format(e))
+        db.session.rollback()
+    
+    finally:
+        db.session.close()
+    
+    
+    headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+    #r = requests.post('https://dev.hswebapp.com/api/templog', data = {'key':'value'})    
+    my_request = requests.post('https://dev.hswebapp.com/api/templog?sensor_type='+sensor_type,json=mdata,headers=headers)              
+    
+    if (my_request.status_code == 201 or my_request.status_code == 409):
+        log.exported = datetime.utcnow()
+        db.session.add(log)
+        db.session.commit()
+    
+    
+    
+    #print(my_request.status_code)
+    print(my_request.json())
+    if (my_request.status_code != 201 ):
+        return jsonify(my_request.json()),my_request.status_code
+    
+    return jsonify(my_request.json()),201
+
 @views.route('/export')
 @login_required
-def export():
+def export(): 
+    
     return render_template('pages/export.html',TempLog=TempLog,HumidityLog=HumidityLog,PressureLog=PressureLog)
    
-   
-
-@views.route('/templog')
-@login_required
-def export_temp_log():
-    last = TempLog.query.order_by(TempLog.rdate.desc()).first()
-    return sensorlog_schema.jsonify(last)
-    
-    
-    
-    

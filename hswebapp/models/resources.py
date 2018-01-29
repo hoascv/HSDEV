@@ -32,6 +32,47 @@ class SensorLogSchema(ma.Schema):
 sensorlog_schema = SensorLogSchema()
 sensorlogs_schema = SensorLogSchema(many=True) 
 
+
+class TempLogSchema(ma.Schema):
+    id = fields.Float()
+    sensor= fields.String()
+    value = fields.Float()
+    rdate  = fields.DateTime()
+    sensorType = fields.String()
+    sensorLocation = fields.String()
+    
+    
+    #@post_load
+    #def create_log(self, data):
+    #    new_log = TempLog(**data)
+    #    new_log.save_to_db
+    #    return new_log
+        
+templog_schema = TempLogSchema() 
+
+class HumLogSchema(ma.Schema):
+    id = fields.Float()
+    sensor= fields.String()
+    value = fields.Float()
+    rdate  = fields.DateTime()
+    sensorType = fields.String()
+    sensorLocation = fields.String()
+    
+    
+    #@post_load
+    #def create_log(self, data):
+    #    new_log = TempLog(**data)
+    #    new_log.save_to_db
+    #    return new_log
+        
+humlog_schema = HumLogSchema() 
+
+
+
+
+
+
+
 class PowerLogSchema(ma.Schema):
     
     sensor= fields.String()

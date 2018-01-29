@@ -4,8 +4,5 @@ p { margin:0 }
 p.hidden {display:none}
 
 
-.dashleft {margin-left:10px;display:inline-block;}
-.dashcenter{margin-left:2px;display:inline-block;margin-right:10px}
-.dashright{display:inline-block;} 
 
 .sensorbox {text-align:left; border-style: none; width:180px;}

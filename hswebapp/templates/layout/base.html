@@ -144,16 +144,18 @@
   <div id="footer">
     <div class="container">
       {% block footer %}
-      <p class="dashleft" id="current_endpoint"> >> {{ request.endpoint }} </p> <p class="dashcenter" id="label_generated">Generated at:</p> <p class="dashcenter" id="generated"></p>     
-      <p>HSWEBAPP &copy; All Rights Reserved.</p>
+      <p class="dashleft" id="current_endpoint">>> {{ request.endpoint }} </p> <p class="dashcenter" id="label_generated">Generated at:</p> <p class="dashcenter" id="generated"></p>     
+      
+      <p >HSWEBAPP &copy; All Rights Reserved.</p>
+      
       {% endblock %}
     </div>
   </div>
   {% block scripts %}
   
        
-  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script type="text/javascript" src="/static/js/libs/jquery-1.11.1.min.js"><\/script>')</script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script type="text/javascript" src="/static/js/libs/jquery-3.3.1.min.js"><\/script>')</script>
   <script type="text/javascript" src="/static/js/libs/bootstrap-3.1.1.min.js" defer></script>
   <script type="text/javascript" src="/static/js/plugins.js" defer></script>
   <script type="text/javascript" src="/static/js/script.js" defer></script>

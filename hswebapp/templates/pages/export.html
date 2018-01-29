@@ -4,49 +4,91 @@
  Export to server
 {% endblock %}
 
+{% block styles %}
+{{super()}}
+ <link rel="stylesheet" href="{{url_for('static', filename='css/hswebapp_export.css')}}"> 
+{% endblock %}
 
 
 {% block content %}
     <div class="container">
-        <h2>Export</h2>
-        <div style="center">
-        <table style="width:50%">
-            <tr>
-                <th>Table</th>
-                <th>Logs</th> 
-                <th>Exported</th>
-                <th>% Exported</th>
-           </tr>
-  <tr>
-    <td>Temperature</td>
-        {% set totalTemp= TempLog.query.count() %}
-    <td>{{totalTemp}}</td> 
-        {% set exportedTemp = TempLog.query.filter(TempLog.exported.isnot(None)).count() %}
-    <td>{{ exportedTemp }}</td>
-    <td>{{exportedTemp/totalTemp}}</td>
-    <td> <button id="btnTemperature" type="button"> update </button> </td> 
-  </tr>
-  <tr>
-    <td>Humidity</td>
-        {% set totalHum= HumidityLog.query.count() %}
-    <td>{{totalHum}}</td> 
-        {% set exportedHum = HumidityLog.query.filter(HumidityLog.exported.isnot(None)).count() %}
-    <td>{{ exportedHum }}</td>
-    <td>{{exportedHum/totalHum}}</td>
-    <td> <button id="btnHumudity"type="button"> update </button> </td> 
-  </tr>
-  <td>Pressure</td>
-        {% set totalPress= PressureLog.query.count() %}
-    <td>{{totalPress}}</td> 
-        {% set exportedPress = PressureLog.query.filter(PressureLog.exported.isnot(None)).count() %}
-    <td>{{ exportedPress }}</td>
-    <td>{{exportedPress/totalPress}}</td>
-    <td> <button id="btnPressure" type="button"> update </button> </td> 
-  </tr>
+        <h3>Exporting to https://dev.hswebapp.com</h3>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div id="overall_status" >
+                    <p> overall status</p>
+                    <progress  value="1" max="100" id ="templog_progress">
+                    </progress>
+                </div>   
+            
+            </div>
+               
+               <div class="table-responsive" >
+               <table class="table"> 
+                
+                <tr>
+                    <th colspan="4" ></th>
+                    <th colspan="4" align="center"> Request</th>
+                </tr>
+                <tr>
+                    <th>Table</th>
+                    <th>Logs</th> 
+                    <th>Exported</th> 
+                    <th>%</th>
+                    <th>status</th>    
+                    <th> sucess</th>
+                    <th> error</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                
+                
+                <tr>
+                   <td>Temperature</td>
+                        {% set totalTemp= TempLog.query.count() %}
+                   <td>{{totalTemp}}</td> 
+                        {% set exportedTemp = TempLog.query.filter(TempLog.exported.isnot(None)).count() %}
+                   <td>{{ exportedTemp }}</td>
+                   <td>{{'{0:0.2f}'.format((exportedTemp/totalTemp * 100))}} </td>
+                   <td><progress id="temp_progess" value={{exportedTemp}} max={{totalTemp}}> </progress></td>
+                   <td id="infoTemperatureLog_sucess_request">0</td>
+                   <td id="infoTemperatureLog_error_request">0</td>
+    
+                   <td> <button  class = "btn btn-primary" id="btnTemperature" type="button">Resume update</button> </td> 
+               </tr>
+                <tr>
+                   <td>Humidity</td>
+                    {% set totalHum= HumidityLog.query.count() %}
+                   <td>{{totalHum}}</td> 
+                    {% set exportedHum = HumidityLog.query.filter(HumidityLog.exported.isnot(None)).count() %}
+                   <td>{{ exportedHum }}</td>
+                   <td>{{'{0:0.2f}'.format((exportedHum/totalHum * 100))}}</td>
+                   <td><progress id="hum_progess" value={{exportedHum}} max={{totalHum}} > </progress></td>
+                   <td id="infoHumidityLog_sucess_request">0</td>
+                   <td id="infoHumidityLog_error_request">0</td>
+                   
+                   <td> <button class = "btn btn-primary" id="btnHumidity"type="button">Resume update</button> </td> 
+               </tr>
+                <tr>  
+                   <td>Pressure</td>
+                    {% set totalPress= PressureLog.query.count() %}
+                   <td>{{totalPress}}</td> 
+                    {% set exportedPress = PressureLog.query.filter(PressureLog.exported.isnot(None)).count() %}
+                   <td>{{ exportedPress }}</td>
+                   <td>{{'{0:0.2f}'.format((exportedPress/totalPress * 100))}}</td>
+                   <td><progress id="pre_progess" value={{exportedPress}} max={{totalPress}} totalpress={{totalPress}} exported={{exportedPress}} > </progress></td>
+                   <td id="infoPressureLog_sucess_request">0</td>
+                   <td id="infoPressureLog_error_request">0</td>
+                
+                   <td> <button  class = "btn btn-primary" id="btnPressure" type="button">Resume update</button> </td> 
+                </tr>
       
-</table>
+            </table>
+         </div>
+        </div>
+
   </div>      
-    </div>
+    
 
 {% endblock %}
 {% block scripts %}
