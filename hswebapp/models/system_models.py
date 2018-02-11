@@ -118,13 +118,15 @@ class AccessGroup(db.Model):
 class Logs(db.Model):
     id      = db.Column(db.Integer,primary_key=True)
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+    origin = db.Column(db.String(20))
     operation =db.Column(db.String(10))
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     
-    def __init__ (self,operation,user_id):
+    def __init__ (self,operation,user_id,origin):
         self.operation=operation
         self.user_id=user_id
+        self.origin =origin
         
     def __repr__(self):
         return "<Log date: {} operation: {} User: {}".format(self.timestamp,self.operation,self.user_id)

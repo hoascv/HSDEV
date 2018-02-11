@@ -63,7 +63,8 @@ def login():
                     db.session.commit()
                 
                     login_user(user,remember=form.rememberme.data)
-                    log = Logs(user_id= user.id,operation='login')
+                    
+                    log = Logs(user_id= user.id,operation='login',origin='webapp')
                     db.session.add(log)
                     db.session.commit()
                     
@@ -107,7 +108,7 @@ def logout():
     user= copy.copy(current_user)
     logout_user()
     flash("See ya: {}".format(user.username))
-    log = Logs(user_id= user.id,operation='logout')
+    log = Logs(user_id= user.id,operation='logout',origin='webapp')
     db.session.add(log)
     db.session.commit() 
     return redirect(url_for('views.home'))

@@ -11,7 +11,7 @@ from blinker import Namespace
 from flask_marshmallow import Marshmallow
 
 from flask_migrate import Migrate
-
+from celery import Celery
 
  
 
@@ -28,6 +28,11 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 migrate = Migrate(app,db)
+
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
 
 
 

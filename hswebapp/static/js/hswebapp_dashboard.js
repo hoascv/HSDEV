@@ -1,4 +1,4 @@
-var update_pool=100000;    
+var update_pool=30000;    
 var page_load=new Date();
  
 $(document).ready(function() {

@@ -1,11 +1,15 @@
-from flask import Blueprint,render_template,flash, redirect, url_for, request, Response,Flask,jsonify
+from flask import Blueprint,render_template,flash, redirect, url_for, request, \
+                  Response,Flask,jsonify,session
 from jinja2 import TemplateNotFound
-from hswebapp import app,db,login_manager,model_saved
+from hswebapp import app,db,login_manager,model_saved,celery
 from hswebapp.models.sensor_models import TempLog,HumidityLog,PressureLog,PowerLog,EventLog
 from hswebapp.models.resources import sensorlog_schema,powerlog_schema,templog_schema
 from datetime import datetime
 #testing 
 from random import randint
+
+from flask_mail import Mail,Message
+mail = Mail(app)
 
 #from sqlalchemy.exc import IntegrityError
 from flask_login import login_required,login_user,logout_user, current_user
@@ -93,22 +97,12 @@ def report_listreadings():
 @views.route('/grafics', methods=["GET"])
 def report_grafics():
     import sys
-    import Adafruit_DHT
-    import Adafruit_BMP.BMP085 as BMP085
-    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 23)
-    values_sensor = BMP085.BMP085()
-
     try:
-            #query_result = db.engine.execute('select count(id) as num from templog')
-            #for row in query_result:
-            #    result= row['num']
-                            
-            result=TempLog.query.count()
-            #templog = db.session.query(TempLog).all()
-            templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(10).all()
-            humiditylog= HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(10).all()
-            pressurelog= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(10).all()
-            powerlog =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(10).all()
+        result=TempLog.query.count()
+        templog= TempLog.query.order_by(TempLog.rdate.desc()).limit(10).all()
+        humiditylog= HumidityLog.query.order_by(HumidityLog.rdate.desc()).limit(10).all()
+        pressurelog= PressureLog.query.order_by(PressureLog.rdate.desc()).limit(10).all()
+        powerlog =   PowerLog.query.order_by(PowerLog.rdate.desc()).limit(10).all()
         
         
     except:
@@ -121,17 +115,12 @@ def report_grafics():
         db.session.close()
         
         
-    if humidity is not None and temperature is not None and values_sensor is not None:
-        return render_template("pages/grafics.html",ntemp=result,
-                                temperature=temperature,temp = templog,
-                                humidity=humidity,humididylog= humiditylog,
-                                pressure=float(values_sensor.read_pressure()/100),
+    return render_template("pages/grafics.html",ntemp=result,
+                                temp = templog,
+                                humididylog= humiditylog,
                                 pressurelog=pressurelog,
                                 powerlog=powerlog
                                 )
-    else:
-        return render_template("no_sensor.html")
-         
    
     
 @views.route('/about1', methods=["GET"])
@@ -273,3 +262,29 @@ def export():
     
     return render_template('pages/export.html',TempLog=TempLog,HumidityLog=HumidityLog,PressureLog=PressureLog)
    
+   
+   
+@views.route('/test99')
+@login_required
+def send_mail():
+    
+    
+    session['email'] = 'hoascv@gmail.com'
+    
+    # send the email
+    msg = Message('Hello from Flask',sender='hsupp99@gmail.com',
+                  recipients=['hoascv@gmail.com'])
+    msg.body = 'This is a test email sent from a background Celery task.'
+    send_async_email.delay(msg)
+    return redirect(url_for('home'))    
+@celery.task
+def send_async_email(msg):
+    """Background task to send an email with Flask-Mail."""
+    with app.app_context():
+        mail.send(msg)
+
+
+        
+
+
+    

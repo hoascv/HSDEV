@@ -45,6 +45,9 @@ if humidity is not None and temperature is not None:
     reading.save_to_db()
     readingH= HumidityLog('humidity_sensor1',datetime.now(),'livingroom','AM2302',humidity)
     readingH.save_to_db()
+else:
+    print("sensor error")
+    
   
 if values_sensor is not None:
     temp_reading= TempLog('temperature_sensor3',datetime.now(),'livingroom','BMP180',values_sensor.read_temperature())
